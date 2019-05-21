@@ -74,21 +74,6 @@ JB :
   archive_path: /archive/
   categories_path : /categories/
   tags_path : /tag/
-
-  # Settings for comments helper
-  # Set 'provider' to the comment provider you want to use.
-  # Set 'provider' to false to turn commenting off globally.
-  #
-  comments :
-    provider : staticman_v3
-    disqus :
-      short_name : dannyzhan
-    livefyre :
-      site_id : 123
-    intensedebate :
-      account : 123abc
-    facebook :
-      apikey : 123
       
 # Staticman comments
 staticmanUrl: https://dev.staticman.net/v3/entry/github/dannyzhan/dannyzhan.github.io/master/comments
