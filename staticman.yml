@@ -1,9 +1,9 @@
 comments:
-  allowedFields: ["author", "message", "email"]
-  requiredFields: ["author", "message", "email"]
+  allowedFields: ["author", "email", "message"]
+  requiredFields: ["author", "email", "message"]
   branch: "master"
-  commitMessage: "add [comment]: by {fields.author} <Staticman>\n\n#comment-{@id}"
-  filename: "{fields.author}-{@id}"
+  commitMessage: "add [comment]: by {fields.author} <Staticman>\n\npostId-{fields.postId}#comment-{@id}"
+  filename: "{fields.author}-{fields.postId}-{@id}"
   format: "yaml"
   generatedFields:
     date:

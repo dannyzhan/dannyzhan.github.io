@@ -22,6 +22,27 @@
         {{ content }}
     </section>
     {% if page.guid %}
+	
+	<h4>文章点评：</h4>
+	<form action='https://dev.staticman.net/v3/entry/github/dannyzhan/dannyzhan.github.io/master' method='post' id='comment-form' class='comment-form'>
+    <input type='hidden' name='options[postId]' value='{{ page.guid }}'>	
+    <div>
+      <label for='name'>姓名 *</label>
+      <input id='name' name='fields[author]' type='text' required>
+    </div>
+    <div>
+      <label for='email'>邮箱 *</label>
+      <input id='email' name='fields[email]' type='email' required>
+    </div>
+	 <div>
+      <label for='comment'>点评 *</label>
+      <textarea id='comment' name='fields[message]' required rows='3'></textarea>
+    </div>
+    <div>
+      <button type='submit'>发送点评</button>
+    </div>
+   </form>
+  
     <section class="comment">
 		<div id="disqus_thread"></div>
         <script>
