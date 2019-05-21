@@ -1,0 +1,17 @@
+comments:
+  allowedFields: ["author", "message", "email"]
+  requiredFields: ["author", "message", "email"]
+  branch: "master"
+  commitMessage: "add [comment]: by {fields.author} <Staticman>\n\n#comment-{@id}"
+  filename: "{fields.author}-{@id}"
+  format: "yaml"
+  generatedFields:
+    date:
+      type: date
+      options:
+        format: "iso8601"
+  moderation: false
+  name: "Danny Zhan's Blog"
+  path: "data/comments/{@timestamp}"  
+  transforms:
+    email: md5
