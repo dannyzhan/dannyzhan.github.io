@@ -21,28 +21,31 @@
     <section class="post">
         {{ content }}
     </section>
-    {% if page.guid %}
 	
-	<h4>文章点评：</h4>
-	<form action='https://dev.staticman.net/v3/entry/github/dannyzhan/dannyzhan.github.io/master/comments' method='post' id='comment-form' class='comment-form'>
-    <input type='hidden' name='options[postId]' value='{{ page.guid }}'>	
-    <div>
-      <label for='name'>姓名 *</label>
-      <input id='name' name='fields[author]' type='text' required>
-    </div>
-    <div>
-      <label for='email'>邮箱 *</label>
-      <input id='email' name='fields[email]' type='email' required>
-    </div>
-	 <div>
-      <label for='comment'>点评 *</label>
-      <textarea id='comment' name='fields[message]' required rows='3'></textarea>
-    </div>
-    <div>
-      <button type='submit'>发送点评</button>
-    </div>
-   </form>
+	 <section id="static-comments">
+        {% if site.staticman.branch %}
+          <!-- Start static comments -->
+          <div class="js-comments">
+            {% if site.data.comments[page.slug] %}
+              <h4 class="page__comments-title">{{ site.data.ui-text[site.locale].comments_title | default: "Comments" }}</h4>
+              {% assign comments = site.data.comments[page.slug] | sort %}
+
+              {% for comment in comments %}
+                {% assign email = comment[1].email %}
+                {% assign name = comment[1].name %}
+                {% assign url = comment[1].url %}
+                {% assign date = comment[1].date %}
+                {% assign message = comment[1].message %}
+                {% include comment.html index=forloop.index email=email name=name url=url date=date message=message %}
+              {% endfor %}
+            {% endif %}
+          </div>
+	</section>
+		   
+    {% if page.guid %}
   
+    {% include comments.html %}
+	
     <section class="comment">
 		<div id="disqus_thread"></div>
         <script>

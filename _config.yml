@@ -80,7 +80,7 @@ JB :
   # Set 'provider' to false to turn commenting off globally.
   #
   comments :
-    provider : disqus
+    provider : staticman_v3
     disqus :
       short_name : dannyzhan
     livefyre :
@@ -89,7 +89,10 @@ JB :
       account : 123abc
     facebook :
       apikey : 123
-   
+      
+# Staticman comments
+staticmanUrl: https://dev.staticman.net/v3/entry/github/dannyzhan/dannyzhan.github.io/master/comments
+    
   # Settings for analytics helper
   # Set 'provider' to the analytics provider you want to use.
   # Set 'provider' to false to turn analytics off globally.

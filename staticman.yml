@@ -1,9 +1,10 @@
 comments:
-  allowedFields: ["author", "email", "message"]
-  requiredFields: ["author", "email", "message"]
+  allowedFields: ["name", "email", "url", "message", "replying_to"]
+  allowedOrigins: ["9932.js.org"]
+  requiredFields: ["name", "message"]
   branch: "master"
   commitMessage: "add [comment]: by {fields.author} <Staticman>\n\npostId-{fields.postId}#comment-{@id}"
-  filename: "{fields.author}-{fields.postId}-{@id}"
+  filename: "comment-{@timestamp}"
   format: "yaml"
   generatedFields:
     date:
@@ -12,6 +13,6 @@ comments:
         format: "iso8601"
   moderation: false
   name: "Danny Zhan's Blog"
-  path: "data/comments/{@timestamp}"  
+  path: "data/comments/{options.slug}"  
   transforms:
     email: md5
