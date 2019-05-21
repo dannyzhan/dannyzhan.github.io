@@ -75,8 +75,6 @@ JB :
   categories_path : /categories/
   tags_path : /tag/
       
-# Staticman comments
-staticmanUrl: https://dev.staticman.net/v3/entry/github/dannyzhan/dannyzhan.github.io/master/comments
     
   # Settings for analytics helper
   # Set 'provider' to the analytics provider you want to use.
