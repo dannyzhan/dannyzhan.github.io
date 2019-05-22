@@ -3,14 +3,14 @@ comments:
   allowedOrigins: ["9932.js.org"]
   requiredFields: ["name", "message"]
   branch: "master"
-  commitMessage: "add comment by <Staticman>\n\npost-{options.page_guid}#comment-{@id}"
+  commitMessage: "<Staticman>: add comment by {options.name}\n\npost-{options.page_guid}#comment-{options.message}"
   filename: "comment-{@timestamp}"
   format: "yaml"
   generatedFields:
     date:
       type: date
       options:
-        format: "timestamp"
+        format: "iso8601"
   moderation: false
   name: "Danny Zhan's Blog"
   path: "_data/comments/{options.page_guid}"  
