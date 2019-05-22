@@ -7,7 +7,7 @@
         {% if include.index %}
         <a href="#comment{{ include.index | prepend: '-' }}" title="Permalink to this comment">
             {% endif %}
-            {{ include.date | date: "%Y-%m-%d %H:%M:%S %Z" }}
+            {{ include.date | date_to_rfc822 }}
             {% comment %}
             {% include format-date.html date=include.date time=false weekDay=false %}
             {% endcomment %}
