@@ -388,7 +388,7 @@ button:hover {
   visibility: hidden;
 }
 
-.form--loading .form__spinner {
+.form__spinner .form--loading {
   display: block;
 }
 

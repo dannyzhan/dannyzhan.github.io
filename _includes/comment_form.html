@@ -1,68 +1,74 @@
 ﻿<form class="js-form form" method="post" action="https://api.staticman.net/v3/entry/github/dannyzhan/dannyzhan.github.io/master/comments" autocomplete="off">
-  <input type="hidden" name="options[origin]" value="{{ page.url | absolute_url }}">
-  <input type="hidden" name="options[parent]" value="{{ page.url | absolute_url }}">
-  <input type="hidden" id="comment-replying-to" name="fields[replying_to]" value="">
-  <input type="hidden" name="options[page_guid]" value="{{ page.guid }}">
-  <input type="hidden" name="options[reCaptcha][siteKey]" value="{{ site.reCaptcha.siteKey }}">
-  <input type="hidden" name="options[reCaptcha][secret]"  value="{{ site.reCaptcha.secret }}">
+    <input type="hidden" name="options[origin]" value="{{ page.url | absolute_url }}">
+    <input type="hidden" name="options[parent]" value="{{ page.url | absolute_url }}">
+    <input type="hidden" id="comment-replying-to" name="fields[replying_to]" value="">
+    <input type="hidden" name="options[page_guid]" value="{{ page.guid }}">
+    <input type="hidden" name="options[reCaptcha][siteKey]" value="{{ site.reCaptcha.siteKey }}">
+    <input type="hidden" name="options[reCaptcha][secret]" value="{{ site.reCaptcha.secret }}">
 
-  <fieldset>
-  <div class="textfield">
-    <label for="comment-form-message"><h2>点评 <span style="color:red">*</span> <small><a rel="nofollow" id="cancel-comment-reply-link" href="{{ page.url | absolute_url }}#respond" style="display:none;">(cancel reply)</a></small></h2>
-      <textarea class="textfield__input" name="fields[message]" type="text" id="comment-form-message"></textarea>
-    </label>
-  </div>
-  </fieldset>
+    <h2>
+        点评
+    </h2>
+    <fieldset>
+        <div class="textfield">
+            <label for="comment-form-message">
+                评论内容 <span style="color:red">*</span> <small><a rel="nofollow" id="cancel-comment-reply-link" href="{{ page.url | absolute_url }}#respond" style="display:none;">(cancel reply)</a></small>
 
-  <fieldset>
-    <div class="textfield">
-      <label for="comment-form-name">姓名 <span style="color:red">*</span>
-        <input class="textfield__input" name="fields[name]" type="text" id="comment-form-name" placeholder="你的姓名 (必填)"/>
-      </label>
-    </div>
-  </fieldset>
-
-  <fieldset>
-    <div class="textfield">
-        <label for="comment-form-email">
-            邮箱
-            <input class="textfield__input" name="fields[email]" type="email" id="comment-form-email" placeholder="你的邮箱 (非必填)" />
-        </label>
+                <textarea class="textfield__input" name="fields[message]" type="text" id="comment-form-message"></textarea>
+            </label>
         </div>
-  </fieldset>
+    </fieldset>
 
-  <fieldset>
-      <div class="form__spinner">
-          <i class="fas fa-spinner fa-spin fa-3x fa-fw"></i>
-          <span class="sr-only">加载中...</span>
-      </div>
-      <div class="notify-me hidden">
-          <label for="comment-form-reply">
-              <input type="checkbox" id="comment-form-reply" name="options[subscribe]" value="email">
-              Send me an email when someone comments.
-          </label>
-      </div>
-  </fieldset>
+    <fieldset>
+        <div class="textfield">
+            <label for="comment-form-name">
+                姓名 <span style="color:red">*</span>
+                <input class="textfield__input" name="fields[name]" type="text" id="comment-form-name" placeholder="你的姓名 (必填)" />
+            </label>
+        </div>
+    </fieldset>
 
-  <fieldset>
-    <div class="g-recaptcha" data-sitekey="{{ site.reCaptcha.siteKey }}"></div>
-  </fieldset>
+    <fieldset>
+        <div class="textfield">
+            <label for="comment-form-email">
+                邮箱
+                <input class="textfield__input" name="fields[email]" type="email" id="comment-form-email" placeholder="你的邮箱 (非必填)" />
+            </label>
+        </div>
+    </fieldset>
 
- <!-- Start comment form alert messaging -->
-  <fieldset class="hidden js-notice">     
-	  <div>
-		  <h3 class="modal-title js-modal-title"></h3>
-	  </div>
-	  <div class="mdl-card__supporting-text js-modal-text">
-		  <strong class="js-notice-text"></strong>
-	  </div>
-	  <div class="mdl-card__actions mdl-card--border">
-		  <div class="button mdl-button--colored mdl-js-button mdl-js-ripple-effect js-close-modal">关闭</div>
-	  </div> 
-      <br />
-  </fieldset>
-	  
-  <fieldset>
-      <input type="submit" value="提交评论" />
-  </fieldset>
+    <fieldset>
+        <div class="form__spinner">
+            <i class="fas fa-spinner fa-spin fa-3x fa-fw"></i>
+            <span class="sr-only">加载中...</span>
+        </div>
+        <div class="notify-me hidden">
+            <label for="comment-form-reply">
+                <input type="checkbox" id="comment-form-reply" name="options[subscribe]" value="email">
+                Send me an email when someone comments.
+            </label>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <div class="g-recaptcha" data-sitekey="{{ site.reCaptcha.siteKey }}"></div>
+    </fieldset>
+
+    <!-- Start comment form alert messaging -->
+    <fieldset class="hidden js-notice">
+        <div>
+            <h3 class="modal-title js-modal-title"></h3>
+        </div>
+        <div class="mdl-card__supporting-text js-modal-text">
+            <strong class="js-notice-text"></strong>
+        </div>
+        <div class="mdl-card__actions mdl-card--border">
+            <div class="button js-close-modal" style="display:inline-block">关闭</div>
+        </div>
+        <br />
+    </fieldset>
+
+    <fieldset>
+        <input type="submit" value="提交评论" />
+    </fieldset>
 </form>

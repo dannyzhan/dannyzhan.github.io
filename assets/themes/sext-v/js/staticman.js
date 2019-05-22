@@ -28,7 +28,7 @@
   });
 
   $('.js-close-modal').click(function () {
-	 $('.js-notice').addClass('hidden');      
+    $('.js-notice').addClass('hidden');      
   });
 
   function showModal(title, message) {
