@@ -11,7 +11,16 @@
     <section class="meta">
         <span class="time">
             <time datetime="{{ page.date | date:"%Y-%m-%d" }}">{{ page.date | date:"%Y-%m-%d" }}</time>
+        </span> &nbsp;
+		<span> 作者：{{ page.author }} </span>
+		{% if page.category %}
+        <span class="categories">
+            {% for category in page.categories %}
+            <a href="/categories#{{ category }}-ref" title="{{ category }}">#{{ category }}</a>
+            {% endfor %}
         </span>
+        {% endif %}
+		
         {% if page.tags %}
         <span class="tags">
             {% for tag in page.tags %}

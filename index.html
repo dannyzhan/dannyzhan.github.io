@@ -5,7 +5,7 @@ title: 刀儿博客-首页
 
 <div>
   <ul class="listing">
-  {% for post in site.posts limit: 10 %}
+  {% for post in site.posts limit: 5 %}
   <article class="content">
     <section class="title">
       <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
@@ -14,6 +14,15 @@ title: 刀儿博客-首页
     <span class="time">
       <time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time>
     </span>
+	<span>作者:{{ page.author }}</span>
+	{% if page.category %}
+	<span class="categories">
+		{% for category in page.categories %}
+		<a href="/categories#{{ category }}-ref" title="{{ category }}">#{{ category }}</a>
+		{% endfor %}
+	</span>
+	{% endif %}
+		
     {% if post.tags %}
     <span class="tags">
       {% for tag in post.tags %}
