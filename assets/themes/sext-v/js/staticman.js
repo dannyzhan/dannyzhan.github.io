@@ -24,8 +24,8 @@
           if (err && err.responseJSON) {
               if (err.responseJSON.errorCode) {
                   errorMessage = err.responseJSON.errorCode;
-              } else if (err.responseJSON.text && err.responseJSON.nextValidRequestDate) {
-                  errorMessage = err.responseJSON.text + 'Next valid request date:' + err.responseJSON.nextValidRequestDate;
+              } else if (err.responseJSON.error.text && err.responseJSON.error.nextValidRequestDate) {
+                  errorMessage = err.responseJSON.error.text + 'Next valid request date:' + err.responseJSON.error.nextValidRequestDate;
               }
           }
           showModal('错误', '对不起, 提交评论时发生错误!' + errorMessage);
