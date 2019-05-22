@@ -28,13 +28,13 @@
   });
 
   $('.js-close-modal').click(function () {
-    $('body').removeClass('show-modal');
+	 $('.js-notice').addClass('hidden');      
   });
 
   function showModal(title, message) {
     $('.js-modal-title').text(title);
-    $('.js-modal-text').html(message);
-    $('body').addClass('show-modal');
+    $('.js-modal-text').html(message);    
+	$('.js-notice').removeClass('hidden');
   }
 })(jQuery);
 
