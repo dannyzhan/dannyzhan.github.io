@@ -72,7 +72,7 @@ JB :
   # Some JB helpers refer to these paths; change theme here if needed.
   #
   archive_path: /archive/
-  categories_path : /categories/
+  categories_path : /categories
   tags_path : /tag/
       
     
