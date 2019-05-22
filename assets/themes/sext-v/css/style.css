@@ -388,13 +388,12 @@ button:hover {
   visibility: hidden;
 }
 
-.form__spinner .form--loading {
+.form--loading {
   display: block;
 }
 
 .form__spinner {
   display: none;
-  position: absolute;
   top: 50%;
   left: 50%;
   z-index: 11;
