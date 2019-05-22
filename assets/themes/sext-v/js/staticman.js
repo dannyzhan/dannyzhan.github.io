@@ -6,7 +6,7 @@
   $('.js-form').submit(function () {
     var form = this;
 
-    $(form).addClass('form--loading');
+      $('form__spinner').addClass('form--loading');
 
     $.ajax({
       type: $(this).attr('method'),
@@ -16,12 +16,12 @@
       success: function (data) {
         showModal('Comment submitted', 'Thanks! Refresh your browser in a minute to see your comment.');
 //        showModal('Comment submitted', 'Thanks! Your comment is <a href="https://github.com/willymcallister/willymcallister.github.io/pulls">pending</a>. It will appear when approved.');
-        $(form).removeClass('form--loading');
+          $('form__spinner').removeClass('form--loading');
       },
       error: function (err) {
         console.log(err);
         showModal('Error', 'Sorry, there was an error when your comment was submitted!');
-        $(form).removeClass('form--loading');
+          $('form__spinner').removeClass('form--loading');
       }
     });
     return false;

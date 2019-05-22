@@ -8,7 +8,7 @@
 
   <fieldset>
   <div class="textfield">
-    <label for="comment-form-message"><h2>点评 <small><a rel="nofollow" id="cancel-comment-reply-link" href="{{ page.url | absolute_url }}#respond" style="display:none;">(cancel reply)</a></small></h2>
+    <label for="comment-form-message"><h2>点评 <span style="color:red">*</span> <small><a rel="nofollow" id="cancel-comment-reply-link" href="{{ page.url | absolute_url }}#respond" style="display:none;">(cancel reply)</a></small></h2>
       <textarea class="textfield__input" name="fields[message]" type="text" id="comment-form-message"></textarea>
     </label>
   </div>
@@ -16,7 +16,7 @@
 
   <fieldset>
     <div class="textfield">
-      <label for="comment-form-name">姓名
+      <label for="comment-form-name">姓名 <span style="color:red">*</span>
         <input class="textfield__input" name="fields[name]" type="text" id="comment-form-name" placeholder="你的姓名 (必填)"/>
       </label>
     </div>
@@ -34,7 +34,7 @@
   <fieldset>
       <div class="form__spinner">
           <i class="fas fa-spinner fa-spin fa-3x fa-fw"></i>
-          <span class="sr-only">Loading...</span>
+          <span class="sr-only">加载中...</span>
       </div>
       <div class="notify-me hidden">
           <label for="comment-form-reply">
@@ -57,7 +57,7 @@
 		  <strong class="js-notice-text"></strong>
 	  </div>
 	  <div class="mdl-card__actions mdl-card--border">
-		  <button class="button mdl-button--colored mdl-js-button mdl-js-ripple-effect js-close-modal">关闭</button>
+		  <div class="button mdl-button--colored mdl-js-button mdl-js-ripple-effect js-close-modal">关闭</div>
 	  </div> 
       <br />
   </fieldset>
