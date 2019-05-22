@@ -5,7 +5,7 @@ title: 刀儿博客-首页
 
 <div>
   <ul class="listing">
-  {% for post in site.posts limit: 1 %}
+  {% for post in site.posts limit: 10 %}
   <article class="content">
     <section class="title">
       <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
@@ -23,7 +23,7 @@ title: 刀儿博客-首页
     {% endif %}
     </section>
     <section class="post">
-    {{ post.content }}
+    {{ post.content  | strip_html | truncate:100}}
     </section>
     </article>
   {% endfor %}
