@@ -382,3 +382,8 @@ button:hover {
 .modal-title {
     margin-bottom: 0px;
 }
+
+.hidden {
+  display: none;
+  visibility: hidden;
+}
