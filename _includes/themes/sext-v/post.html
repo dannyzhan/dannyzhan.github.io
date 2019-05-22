@@ -6,7 +6,7 @@
 
 <article>
     <section class="title">
-        <h2>{{ page.title }} ({{ page_guid }})</h2>
+        <h2>{{ page.title }}</h2>
     </section>
     <section class="meta">
         <span class="time">
@@ -23,7 +23,12 @@
     <section class="post">
         {{ content }}
     </section>
-	 
+	
+	{% if page.guid %}   
+    
+    {% include comments.html %}
+ 
+    {% endif %}
 </article>
 
 {% if page.previous or page.next %}
