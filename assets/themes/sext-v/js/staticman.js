@@ -28,7 +28,7 @@
                   errorMessage = err.responseJSON.error.text + 'Next valid request date:' + err.responseJSON.error.nextValidRequestDate;
               }
           }
-          showModal('错误', '对不起, 提交评论时发生错误!' + errorMessage);
+          showModal('错误', '对不起, 提交评论时发生错误. ' + errorMessage);
           $('form__spinner').removeClass('form--loading');
       }
     });

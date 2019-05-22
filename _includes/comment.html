@@ -5,13 +5,14 @@
     <span class="comment__date">
       {% if include.date %}
         {% if include.index %}
-          <a href="#comment{{ include.index | prepend: '-' }}" title="Permalink to this comment">
-        {% endif %}
-        {{ include.date | date_to_long_string }}
-        {% comment %}
-          {% include format-date.html date=include.date time=false weekDay=false %}
-        {% endcomment %}
-        {% if include.index %}</a>{% endif %}
+        <a href="#comment{{ include.index | prepend: '-' }}" title="Permalink to this comment">
+            {% endif %}
+            {{ include.date | date_to_rfc822 }}
+            {% comment %}
+            {% include format-date.html date=include.date time=false weekDay=false %}
+            {% endcomment %}
+            {% if include.index %}
+        </a>{% endif %}
       {% endif %}
     </span>
   </div>
@@ -22,7 +23,7 @@
 
   {% unless include.replying_to != 0 %}
     <div class="comment__meta">
-      <a rel="nofollow" class="comment__reply-link" onclick="return addComment.moveForm('comment-{{ include.index }}', '{{ include.index }}', 'respond', '{{ post_slug }}')">↪&#xFE0E; Reply to {{ include.name }}</a>
+      <a rel="nofollow" class="comment__reply-link" onclick="return addComment.moveForm('comment-{{ include.index }}', '{{ include.index }}', 'respond', '{{ post_slug }}')">↪&#xFE0E; 回复 {{ include.name }}</a>
     </div>
   {% endunless %}  
 </article>
