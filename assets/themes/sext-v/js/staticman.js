@@ -1,4 +1,4 @@
-// Static comments
+﻿// Static comments
 // from: https://github.com/eduardoboucas/popcorn/blob/gh-pages/js/main.js 
 (function ($) {
   var $comments = $('.js-comments');
@@ -19,8 +19,16 @@
           $('form__spinner').removeClass('form--loading');
       },
       error: function (err) {
-        console.log(err);
-        showModal('Error', 'Sorry, there was an error when your comment was submitted!');
+          console.log(err);
+          var errorMessage = '';
+          if (err && err.responseJSON) {
+              if (err.responseJSON.errorCode) {
+                  errorMessage = err.responseJSON.errorCode;
+              } else if (err.responseJSON.text && err.responseJSON.nextValidRequestDate) {
+                  errorMessage = err.responseJSON.text + 'Next valid request date:' + err.responseJSON.nextValidRequestDate;
+              }
+          }
+          showModal('错误', '对不起, 提交评论时发生错误!' + errorMessage);
           $('form__spinner').removeClass('form--loading');
       }
     });

@@ -389,7 +389,7 @@ button:hover {
 }
 
 .form--loading {
-  display: block;
+  display: block !important;
 }
 
 .form__spinner {
