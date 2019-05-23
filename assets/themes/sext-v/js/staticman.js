@@ -11,15 +11,20 @@
         $('#comment-form-email').val(user_email);
     }
 
-    window.onload = function () {
-        var script = document.createElement("script");
-        script.type = "text/javascript";
-        script.src = "https://api.ipify.org?format=jsonp&callback=getIP";
-        document.getElementsByTagName("head")[0].appendChild(script);
-    };
-    function getIP(response) {
-        $('#comment-client-ip').val(response.ip);
-    }
+    //get client IP
+    //we can query IP information here: https://ipinfo.io/
+    $.ajax({
+        type: 'get',
+        url: 'https://api.ipify.org?format=json',
+        contentType: 'application/x-www-form-urlencoded',
+        success: function (data) {
+            console.log(data.ip);
+            $('#comment-client-ip').val(data.ip);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
 
     $('.js-form').submit(function () {
         var form = this;
