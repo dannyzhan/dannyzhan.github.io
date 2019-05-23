@@ -11,6 +11,16 @@
         $('#comment-form-email').val(user_email);
     }
 
+    window.onload = function () {
+        var script = document.createElement("script");
+        script.type = "text/javascript";
+        script.src = "https://api.ipify.org?format=jsonp&callback=getIP";
+        document.getElementsByTagName("head")[0].appendChild(script);
+    };
+    function getIP(response) {
+        $('#comment-client-ip').val(response.ip);
+    }
+
     $('.js-form').submit(function () {
         var form = this;
 

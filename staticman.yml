@@ -1,5 +1,5 @@
 comments:
-  allowedFields: ["name", "email", "url", "message", "replying_to"]
+  allowedFields: ["name", "email", "client_ip", "message", "replying_to"]
   allowedOrigins: ["9932.js.org"]
   requiredFields: ["name", "message"]
   branch: "master"
