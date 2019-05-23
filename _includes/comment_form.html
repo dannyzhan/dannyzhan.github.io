@@ -14,7 +14,7 @@
             <label for="comment-form-message">
                 评论内容 <span style="color:red">*</span> (系统目前限制每15分钟只能点评一次) <small><a rel="nofollow" id="cancel-comment-reply-link" href="{{ page.url | absolute_url }}#respond" style="display:none;">(取消回复)</a></small>
 
-                <textarea class="textfield__input" name="fields[message]" type="text" id="comment-form-message"></textarea>
+                <textarea class="textfield__input" name="fields[message]" type="text" id="comment-form-message" rows='3' required></textarea>
             </label>
         </div>
     </fieldset>
@@ -23,7 +23,7 @@
         <div class="textfield">
             <label for="comment-form-name">
                 姓名 <span style="color:red">*</span>
-                <input class="textfield__input" name="fields[name]" type="text" id="comment-form-name" placeholder="你的姓名 (必填)" />
+                <input class="textfield__input" name="fields[name]" type="text" id="comment-form-name" placeholder="你的姓名 (必填)" required />
             </label>
         </div>
     </fieldset>
