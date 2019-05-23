@@ -7,7 +7,7 @@
     var form = this;
 
       $('.form__spinner').addClass('form--loading');
-	  $('.submit__button').disabled = true;
+	  $('.submit__button').attr("disabled", true);
 
     $.ajax({
       type: $(this).attr('method'),
@@ -18,7 +18,7 @@
         showModal('成功', '恭喜，点评成功! 请在1分钟后刷新浏览器以查看你的点评.');
 //        showModal('Comment submitted', 'Thanks! Your comment is <a href="https://github.com/willymcallister/willymcallister.github.io/pulls">pending</a>. It will appear when approved.');
           $('.form__spinner').removeClass('form--loading');
-		  $('.submit__button').disabled = false;
+		  $('.submit__button').attr("disabled", false);
       },
       error: function (err) {
           console.log(err);
@@ -32,7 +32,7 @@
           }
           showModal('错误', '对不起, 提交评论时发生错误. ' + errorMessage);
           $('.form__spinner').removeClass('form--loading');
-		   $('.submit__button').disabled = false;
+		   $('.submit__button').attr("disabled", false);
       }
     });
     return false;
