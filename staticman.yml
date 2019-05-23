@@ -3,7 +3,7 @@ comments:
   allowedOrigins: ["9932.js.org"]
   requiredFields: ["name", "message"]
   branch: "master"
-  commitMessage: "<Staticman>: add comment by {fields.name}\n\npost-{options.page_guid}#comment-{fields.message}"
+  commitMessage: "<Staticman>: add new comment in post-{options.page_guid}#comment-{@id}"
   filename: "comment-{@timestamp}"
   format: "yaml"
   generatedFields:
