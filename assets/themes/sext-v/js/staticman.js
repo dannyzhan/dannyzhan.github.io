@@ -27,8 +27,9 @@
                 showModal('成功', '谢谢，你的点评已成功提交! 在审核通过后将在本页面显示, 请耐心等待.');
                 $('.form__spinner').removeClass('form--loading');
                 $('.submit__button').attr("disabled", false);
-                window.localStorage.setItem("comment-form-name", form.fields.name);
-                window.localStorage.setItem("comment-form-email", form.fields.email);
+                window.localStorage.setItem("comment-form-name", $("#comment-form-name").val());
+                window.localStorage.setItem("comment-form-email", $("#comment-form-email").val());
+                $('#comment-form-message').val('');
             },
             error: function (err) {
                 console.log(err);
