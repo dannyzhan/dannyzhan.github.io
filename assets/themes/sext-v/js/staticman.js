@@ -15,8 +15,8 @@
       data: $(this).serialize(),
       contentType: 'application/x-www-form-urlencoded',
       success: function (data) {
-        showModal('成功', '恭喜，点评成功! 请在1分钟后刷新浏览器以查看你的点评.');
-//        showModal('Comment submitted', 'Thanks! Your comment is <a href="https://github.com/willymcallister/willymcallister.github.io/pulls">pending</a>. It will appear when approved.');
+//        showModal('成功', '恭喜，点评成功! 请在1分钟后刷新浏览器以查看你的点评.');
+		  showModal('成功', '谢谢，你的点评已成功提交! 在审核通过后将在本页面显示, 请耐心等待.');
           $('.form__spinner').removeClass('form--loading');
 		  $('.submit__button').attr("disabled", false);
       },
