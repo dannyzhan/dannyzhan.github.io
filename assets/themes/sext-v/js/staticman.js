@@ -17,8 +17,7 @@
         type: 'get',
         url: 'https://api.ipify.org?format=json',
         contentType: 'application/x-www-form-urlencoded',
-        success: function (data) {
-            console.log(data.ip);
+        success: function (data) {            
             $('#comment-client-ip').val(data.ip);
         },
         error: function (err) {
