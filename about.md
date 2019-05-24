@@ -1,6 +1,9 @@
 ---
-title: 关于刀儿
 layout: page
+title: 关于刀儿
+author:	刀儿
+date: 2019-05-10
+guid: 1b54a465-5cdf-4aad-b841-9bc19b1fc57a
 ---
  刀儿，真名詹正端，高中时同学亲切地称呼我为端儿（儿化音），蕲春方言发音类似刀儿，故自称刀儿。
 英文Danny发音与儿化音刀儿相近，故自取英文名Danny。
