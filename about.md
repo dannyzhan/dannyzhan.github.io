@@ -49,3 +49,5 @@ guid: 1b54a465-5cdf-4aad-b841-9bc19b1fc57a
 
 2016年6月于吉林大学南校区
 ![2016年6月于吉林大学南校区](/assets/i/old_photo/20160611.jpg)
+
+[刀儿的本科毕业论文](/assets/doc/刀儿的本科毕业论文.doc)
