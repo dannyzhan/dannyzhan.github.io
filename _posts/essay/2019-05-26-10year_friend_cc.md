@@ -1,7 +1,7 @@
-﻿---
+---
 layout: post
 title:  十年蓝颜
-author:	操俊生
+author:	CC
 date: 2019-05-26
 category: essay
 tags:  朋友
