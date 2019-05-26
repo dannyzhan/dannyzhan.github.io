@@ -1,4 +1,4 @@
-___
+---
 layout: post
 title:  十年蓝颜
 author:	操俊生
@@ -6,7 +6,7 @@ date: 2019-05-26
 category: essay
 tags:  朋友
 guid: 313ff5de-76f8-4825-aa56-9b2b911fd68c
-___
+---
 
 
 当渐渐深切的感受到青春真的已经一去不复返的时候，就开始怀念，留恋。
