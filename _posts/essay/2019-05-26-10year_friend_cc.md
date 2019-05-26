@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  十年蓝颜-作者CC
+title:  十年蓝颜-CC
 author:	CC
 date: 2019-05-26
 category: essay
