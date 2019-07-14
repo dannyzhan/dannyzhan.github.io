@@ -1,0 +1,416 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0038)https://datapie.top/cnlearn/index.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+<title>汉字学习</title>
+<link rel="stylesheet" href="./study_files/buttons.css">
+<script src="./study_files/jquery-3.3.1.min.js.download"></script>
+<script src="./study_files/popup.js.download"></script>
+<style>
+body {
+	text-align: center
+}
+
+
+input{
+    border:1;
+	padding:0;
+	margin:0;
+    outline:0;
+	background-color:transparent;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+    border: 0;
+}
+.gui {
+    width: 100%;
+	height: 450px;
+}
+.card {
+	width: 100%;
+	height: 450px;
+	background: #124191; 
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 8px 0 rgba(0, 0, 0, 0.19);
+	text-align: center;
+	border-radius: 5px;
+}
+
+.header {
+	color: #fff;
+	font-size: 20px;
+}
+
+.body {
+	/*padding: 10px;*/
+	font-family: "Microsoft Yahei"; 
+}
+
+.card img {
+	width: 70%;
+}
+
+.align-center {
+	margin:0 auto;
+	text-align: center; 
+}
+
+#mask_shadow {
+  display: none;
+  opacity: 0;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
+}
+#popup {
+  display: none;
+  opacity: 0; 
+  position: absolute;
+  z-index: 2;
+  //top: 5px;
+  width: 300px;
+  height: 300px;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5);
+   background-color: #EDEDED; 
+}
+#popup .title {
+  position: relative;
+  width: 100%;
+  //height: 50px;
+  //background-color: #5bc0de;
+  cursor: move;
+}
+#popup .title p {
+  /*padding-left: 14px;*/
+  //line-height: 40px;
+  //color: #fff;
+}
+#popup .title span {
+  position: absolute;
+  margin-top:0;
+  margin-bottom:0;
+  top: 0;
+  right: 1px;
+  width: 26px;
+  //height: 30px;
+  color: #000;
+  opacity: .2;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+  border: 1px solid #333;
+}
+#popup .title span:hover {
+  opacity: .8;
+}
+.cont { width: 300px; height: 300px;   }
+
+</style>
+
+<script type="text/javascript">
+    window.timmer = 60;
+	window.seq = 0;
+	window.scores = 0;
+	window.words = "";
+	window.unknowwords="";
+	window.fontSize="200px";
+	if(window.screen.width < window.screen.height) {
+	    window.fontSize="200px";
+	}
+	
+	function decodeUtf8(bytes) {
+    var encoded = "";
+        for (var i = 0; i < bytes.length; i++) {
+            encoded += '%' + bytes[i].toString(16);
+        }
+        return decodeURIComponent(encoded);
+    }
+
+	function tounicode(data){
+       var str =''; 
+       for(var i=0;i<data.length;i++)
+       {
+          str+=parseInt(data[i].charCodeAt(0),10).toString(16);
+       }
+       return str;
+    }
+	
+    function tohanzi(inData){
+        var data = inData.split('\\u');
+        var str ='';
+        for(var i=0;i<data.length;i++)
+        {
+            str+=String.fromCharCode(parseInt(data[i],16).toString(10));
+        }
+        return str;
+    }
+	
+	function fomatFloat(src, pos) {
+		return Math.round(src * Math.pow(10, pos)) / Math.pow(10, pos);
+	}
+
+	function randomValue(lowerValue, upperValue) {
+		return Math.floor(Math.random() * (upperValue - lowerValue + 1)
+				+ lowerValue);
+	}
+
+	function sleep(numberMillis) {
+		var now = new Date();
+		var exitTime = now.getTime() + numberMillis;
+		while (true) {
+			now = new Date();
+			if (now.getTime() > exitTime)
+				return;
+		}
+	}
+
+	function imbolden(text) {
+	    playSound("audio/"+text+".mp3");
+	}
+	
+	function playSound(src) {
+	    var audio = new Audio(src);
+		audio.play();
+	}
+	
+	function doYes() {
+		if (checkOver() > 0) {
+			imbolden("zhenbang");
+			window.seq += 1;
+			window.scores += 1;
+			showNextWord();
+		}
+	}
+
+	function getScore() {
+		var score = window.scores / window.seq * 100;
+		alert("你的挑战进度:"+window.seq+",当前得分:" + fomatFloat(score, 1) + ", 继续加油！");
+	}
+	
+	function checkOver() {
+	    var MAX_QUESTION = 100;
+		if (window.seq >= MAX_QUESTION) {
+		    $.get("savewords.php?words="+window.unknowwords, function(result){
+			    window.unknowwords="";
+			});
+			var score = window.scores / window.seq * 100;
+			alert("挑战结束, 你的最终得分为: " + fomatFloat(score, 1));
+			window.seq = 0;
+			window.scores = 0;
+
+			$("#controlview").hide();
+			$("#aword").css("fontSize", "40px");
+			showSelectView();
+			return 0;
+		} else {
+
+			return 1;
+		}
+
+	}
+	function doNo() {
+		if (checkOver() > 0) {
+		    imbolden("jiayou");
+			window.seq += 1;
+			var aword = $("#aword").text();
+			if(window.unknowwords.indexOf(aword) == -1) {
+			    window.unknowwords+=aword;
+			}
+			showNextWord();
+		}
+
+	}
+	
+	function Element(type) {
+	    return document.createElement(type);
+	}
+
+	function showSelectView() {
+	    $("#bgcolordiv").css('color','white');
+	    $("#bgcolordiv").show();
+		$("#aword").html("<img src='img/logo.png' /><br/><h4>选择挑战难度：</h4>");
+	    var wordView = document.getElementById('aword');
+		//wordView.innerHTML = "<h2>认字挑战</h2><h4>选择挑战难度：</h4>";
+		
+		var level=["初级难度","中级难度","高级难度","拓展篇","复习篇"];
+		
+		for(var i=0;i<level.length;i++){
+		    var wordsLevelRadio = Element("input");
+		    wordsLevelRadio.setAttribute('type', 'radio');
+		    wordsLevelRadio.setAttribute('name', 'wordlevel');
+		    wordsLevelRadio.setAttribute('value', i);
+		    wordView.appendChild(wordsLevelRadio);
+		    wordView.append(level[i]);
+		    wordView.appendChild(Element('br'));
+		}
+		
+		wordView.appendChild(Element('br'));
+		var startButton = Element('button');
+		startButton.setAttribute('class', 'button button-raised button-royal');
+		startButton.setAttribute('id', 'startButton');
+		startButton.append('Go');
+		wordView.appendChild(startButton);
+	}
+
+	function startNow() {
+	    if(window.words == "") {
+		    alert("你还没有选择挑战难度!");
+			return;
+		}
+	    imbolden("tiaozhankaishi");
+	    $("#bgcolordiv").hide();
+		$("#controlview").show('slow',function(){
+		    $("#aword").css("fontSize", window.fontSize);
+			$("#aword").css("font-family","楷体");
+			window.timmer = 3;
+			$("#aword").text(window.timmer);
+		    window.timehwnd=setInterval("Countdown()",1000);
+		});
+	}
+	
+	function Countdown(){   
+        window.timmer--;    
+        if(window.timmer == 0){
+            clearInterval(window.timehwnd);
+			showNextWord();
+        }
+		else{
+		    if(window.timmer == 1) {
+			    //imbolden("tiaozhankaishi");
+			}
+			
+            $("#aword").text(window.timmer);
+        }		
+    }
+
+	function selectWordLevel(level) {
+		var wordsGroup = [
+		        "吾昆卧伪执贼谈舍捏侧抛损恋较慌验戚铝抖拦涌抚挤悔茂健武乏脾耗盐寻欠莫傲耐卸淘龄滤似页债跌褐研负伐玫郑蜓阁矿券劫铜堂渴遗承辞犬链微叹沫阐阔巷拥锐素夷旅匈堤砸狠祖乌透宇属墨肝资阵案便豫魂塞司拆奥柴抄占刑葬措储归炕测舒桦盟勾恒患拇允延注贫符版着妻扯胸厦拟或倍这堆缘仍范浓氢民儒额涛嘉般政轨盆袭膨吊肃册型辽喂溜遂随灭释奋劣煤割封技丙威驼些融岳邻赴媒脖雌屈竟须贤守究歧侦惠岭桐价触拓艾凹活京哎贡税荣沟裙唯斤鹏迫逢喻首江踏稿移蔡硬尼械频弥颤综裂曾稀忧凡忌致曼挡峰撑枫讯侯钠哩刹痕阴讨辐徒袁冯阻杏御座廊澳勃丛淋橘凶滥匆丽莱炒柱咽判愣穗偿洁谓衰切析赠偷伟砍岸盘凭种款简沃质予羚份弃掠氮届桩任利舟纵投则航宗够莲售训杜巩啼申谦抹宴辖嫂施终预召函备默玲祝兼合衡捧颂症谋趁矛献壮目珊俊削桑绪癌朴氏肩颇准式谐裁夜邓吨艇库槽刮抓硫醇辉扭株户斥序怨晴戈徐杆销篇妥挑宙坑犹戒逆驻段例追础牡蹄匙概队抽傅缩庆穴顷瘤疫润森盾拍霍咳剂罪极违饶租义监译迁趣鹊埋抢谱番性匀碌柳塌舰彻引调慎湾涉据岂委敬股沸履萄夺怀帝钓役棕捷距洪寄蟹萧鲁既潜柄整脉僚鸽且雕藻最顿垄栏访附感萎秦趋屏唤宪欣疆脆牧轴娱若旦温辟恼替字洒呈代币猩磷昂聚虑渡兄逐瘦自述辑旋策渐撒毁甚吻棉督灾凳掘嫌疾隶掩坐唾宣遭熔愈匠状喇轿贾垫氧翠压愤遥拐率绣峡杨尸敏烛赏渔木艰裤淹握巡仲崇议揭诺慰济挺烈惩待官矣经唉障氯幻伦耸纷做噪泊敌瑞泌仔珠孝勉智赫构雅砖鸦穆凑枯著周狱尽宋泉初标亩朗茅陵牺泻料贺恰宿悦索乳棚浩搞钉重域左径碳趟寺俗挂亭坝洛设诞绸艳培血沿炮屠胀权竹都皂辩插隙肯浇许虽览滨筑窃拳维娇慨纤碍走依狐搭庙寿吴亡豪堪鸣蓄钾医询昨陡崖泽畅妙碱蒸筹乔拒谷职帘签刊鞭态势帆循奉配旨蕴暂帐韵垂栽吸覆哀卑作暗萍岗围奈尊敦寂州晰劝副仇洲菲峻庞雄中总僵嘴廷徽嗅颁氨骄优埃懂略惧煌邦怒披繁县忠主况治足携霞含舱括罐键彼响搅疏哄呆慈呵钻布唇慕即蛮葫婶朱醉艘赖蛛搬瓦散翔启休倦恨伏茫昏脂哗软组俺弦效粪漠坊辅壁纺惑稻扬拉墓续碑郊遮短滋织脊怜缺裕尚您嫁抵奴推诱扮逝玄勒鲤私腺孵绒驰哟途纬厂遵搜蒜跃恶亦孔侵踪胡裸恩泄愚咸掏纳纠模胶退籍哑缓赚丈躺崩丹泪闷振驾项察稼批牵漏她绕此笋熬适撤复焰饲砌皱枕务犁浙朝添谊僧污枢殖剥宰置畜残贸盈富结遣翅譬漆隐助欲硝差抑挪征旱赔规领展付殊朽梁溉扑厢竖获席胚疼狭众吼诊郁陶肾炉鸿祸及廉钢毅烟搏沾导诸宅袖躁驱晓拢截降促汇逸竭局逮婚悉耀忽但宜皆竞党镜堵臣瓣专援倡瞅赋迅捉辈装辨尘永寓裹嗓吞府示源燥傍愉液叙仓雁瞬肢虚丘煮拾枚详证曰审梢族浸旺子挨划异炸络史曲姆嫩磁蚕粮尤钙伊倾财惹阳牌仅悲泛催牲痛免协俩孕礁桌硅蒋省央伍髓叠盼腔另愧蝇磨巧迹染刻映爪灿腾囊娶炎焦疑悄鉴误潭酬争紫誉芬住盯籽拼炼仰瓷扩亿吟肿橡奔逼践挣愁估宏柜纲箭赤蚯秀补悬叭冶卢蝙革撕藤淡挽惟均喘玻缠母腹夕津拨令缝霜志显枝翻赌溃攀纱栖独益抒陷渗矩姿壤吁颈捕烦普码至淀扁稳灌庄介睁蚀理律波惨滩骤顽遍桂蓬互锻塘疲稍社劲浑帕猪避陕膝蜘缸升蔽扎躯坛乎锋杂郎饱击阀危拱陆嚷颠爷蝴淮乙叛驳限控嘱铺肺涨杉晋眠撞锡葛烂衫飘跨掀贯妨仪丧粒贮净屑潮湘忆制境蹲灶穷岩奏媳侍塑基闲仗辱妇论罢饰胁熙列爹鹤某佛祥署军责尔钟近隔账阶溢酿爆绩晨衍候绍卵斜剖捞供柏窄兆修突契溶增破坦殿罕筒歇腊兹肪渣幕衬转宾勤禽衔毫炭趾仿瓢蚓荒坟贩凝拖哲娜",
+				//"一二三四五六七八九十百千加减乘除大小多少长短方圆前后左右上下里外远近高矮出入开关起落来去轻重快慢有无空满凉热冷暖真假好坏生熟湿干粗细软硬横竖直弯正斜薄厚宽窄深浅春夏秋冬阴晴早晚东南西北酸甜苦辣日月水火山石土田天地星云风雨雷电衣帽鞋袜巾帕枕垫杯瓶壶桶钟表灯扇勺筷刀叉锅碗盘盆镜梳床凳钉铲针线琴棋书画笔纸尺盒伞烛鼓铃球筒箱包瓜果梨桃饭菜米面葱姜蒜椒糕饼蛋糖柿茄菠豆莓李橙蕉红黄蓝绿紫粉白黑花草树木梅兰竹菊冰雪沙虹江河海瀑桌椅门窗机车船帆枝叶芽苗杨柳松桦哥姐弟妹爷奶爸妈你我他她男女老幼眼耳口鼻手足牙脸人身头发师生工医哭笑喜怒吃喝醒睡走跑坐卧摸爬站立折剪编涂滑骑抱玩写指举拍看想拿洗鸟兽虫鱼猫狗兔雁猪马牛羊鸡鸭鹅燕",
+				"吾昆卧伪执贼谈舍捏侧抛损恋较慌验戚铝抖拦涌抚挤悔茂健武乏脾耗盐寻欠莫傲耐卸淘龄滤似页债跌褐研负伐玫郑蜓阁矿券劫铜堂渴遗承辞犬链微叹沫阐阔巷拥锐素夷旅匈堤砸狠祖乌透宇属墨肝资阵案便豫魂塞司拆奥柴抄占刑葬措储归炕测舒桦盟勾恒患拇允延注贫符版着妻扯胸厦拟或倍这堆缘仍范浓氢民儒额涛嘉般政轨盆袭膨吊肃册型辽喂溜遂随灭释奋劣煤割封技丙威驼些融岳邻赴媒脖雌屈竟须贤守究歧侦惠岭桐价触拓艾凹活京哎贡税荣沟裙唯斤鹏迫逢喻首江踏稿移蔡硬尼械频弥颤综裂曾稀忧凡忌致曼挡峰撑枫讯侯钠哩刹痕阴讨辐徒袁冯阻杏御座廊澳勃丛淋橘凶滥匆丽莱炒柱咽判愣穗偿洁谓衰切析赠偷伟砍岸盘凭种款简沃质予羚份弃掠氮届桩任利舟纵投则航宗够莲售训杜巩啼申谦抹宴辖嫂施终预召函备默玲祝兼合衡捧颂症谋趁矛献壮目珊俊削桑绪癌朴氏肩颇准式谐裁夜邓吨艇库槽刮抓硫醇辉扭株户斥序怨晴戈徐杆销篇妥挑宙坑犹戒逆驻段例追础牡蹄匙概队抽傅缩庆穴顷瘤疫润森盾拍霍咳剂罪极违饶租义监译迁趣鹊埋抢谱番性匀碌柳塌舰彻引调慎湾涉据岂委敬股沸履萄夺怀帝钓役棕捷距洪寄蟹萧鲁既潜柄整脉僚鸽且雕藻最顿垄栏访附感萎秦趋屏唤宪欣疆脆牧轴娱若旦温辟恼替字洒呈代币猩磷昂聚虑渡兄逐瘦自述辑旋策渐撒毁甚吻棉督灾凳掘嫌疾隶掩坐唾宣遭熔愈匠状喇轿贾垫氧翠压愤遥拐率绣峡杨尸敏烛赏渔木艰裤淹握巡仲崇议揭诺慰济挺烈惩待官矣经唉障氯幻伦耸纷做噪泊敌瑞泌仔珠孝勉智赫构雅砖鸦穆凑枯著周狱尽宋泉初标亩朗茅陵牺泻料贺恰宿悦索乳棚浩搞钉重域左径碳趟寺俗挂亭坝洛设诞绸艳培血沿炮屠胀权竹都皂辩插隙肯浇许虽览滨筑窃拳维娇慨纤碍走依狐搭庙寿吴亡豪堪鸣蓄钾医询昨陡崖泽畅妙碱蒸筹乔拒谷职帘签刊鞭态势帆循奉配旨蕴暂帐韵垂栽吸覆哀卑作暗萍岗围奈尊敦寂州晰劝副仇洲菲峻庞雄中总僵嘴廷徽嗅颁氨骄优埃懂略惧煌邦怒披繁县忠主况治足携霞含舱括罐键彼响搅疏哄呆慈呵钻布唇慕即蛮葫婶朱醉艘赖蛛搬瓦散翔启休倦恨伏茫昏脂哗软组俺弦效粪漠坊辅壁纺惑稻扬拉墓续碑郊遮短滋织脊怜缺裕尚您嫁抵奴推诱扮逝玄勒鲤私腺孵绒驰哟途纬厂遵搜蒜跃恶亦孔侵踪胡裸恩泄愚咸掏纳纠模胶退籍哑缓赚丈躺崩丹泪闷振驾项察稼批牵漏她绕此笋熬适撤复焰饲砌皱枕务犁浙朝添谊僧污枢殖剥宰置畜残贸盈富结遣翅譬漆隐助欲硝差抑挪征旱赔规领展付殊朽梁溉扑厢竖获席胚疼狭众吼诊郁陶肾炉鸿祸及廉钢毅烟搏沾导诸宅袖躁驱晓拢截降促汇逸竭局逮婚悉耀忽但宜皆竞党镜堵臣瓣专援倡瞅赋迅捉辈装辨尘永寓裹嗓吞府示源燥傍愉液叙仓雁瞬肢虚丘煮拾枚详证曰审梢族浸旺子挨划异炸络史曲姆嫩磁蚕粮尤钙伊倾财惹阳牌仅悲泛催牲痛免协俩孕礁桌硅蒋省央伍髓叠盼腔另愧蝇磨巧迹染刻映爪灿腾囊娶炎焦疑悄鉴误潭酬争紫誉芬住盯籽拼炼仰瓷扩亿吟肿橡奔逼践挣愁估宏柜纲箭赤蚯秀补悬叭冶卢蝙革撕藤淡挽惟均喘玻缠母腹夕津拨令缝霜志显枝翻赌溃攀纱栖独益抒陷渗矩姿壤吁颈捕烦普码至淀扁稳灌庄介睁蚀理律波惨滩骤顽遍桂蓬互锻塘疲稍社劲浑帕猪避陕膝蜘缸升蔽扎躯坛乎锋杂郎饱击阀危拱陆嚷颠爷蝴淮乙叛驳限控嘱铺肺涨杉晋眠撞锡葛烂衫飘跨掀贯妨仪丧粒贮净屑潮湘忆制境蹲灶穷岩奏媳侍塑基闲仗辱妇论罢饰胁熙列爹鹤某佛祥署军责尔钟近隔账阶溢酿爆绩晨衍候绍卵斜剖捞供柏窄兆修突契溶增破坦殿罕筒歇腊兹肪渣幕衬转宾勤禽衔毫炭趾仿瓢蚓荒坟贩凝拖哲娜",
+				"吾昆卧伪执贼谈舍捏侧抛损恋较慌验戚铝抖拦涌抚挤悔茂健武乏脾耗盐寻欠莫傲耐卸淘龄滤似页债跌褐研负伐玫郑蜓阁矿券劫铜堂渴遗承辞犬链微叹沫阐阔巷拥锐素夷旅匈堤砸狠祖乌透宇属墨肝资阵案便豫魂塞司拆奥柴抄占刑葬措储归炕测舒桦盟勾恒患拇允延注贫符版着妻扯胸厦拟或倍这堆缘仍范浓氢民儒额涛嘉般政轨盆袭膨吊肃册型辽喂溜遂随灭释奋劣煤割封技丙威驼些融岳邻赴媒脖雌屈竟须贤守究歧侦惠岭桐价触拓艾凹活京哎贡税荣沟裙唯斤鹏迫逢喻首江踏稿移蔡硬尼械频弥颤综裂曾稀忧凡忌致曼挡峰撑枫讯侯钠哩刹痕阴讨辐徒袁冯阻杏御座廊澳勃丛淋橘凶滥匆丽莱炒柱咽判愣穗偿洁谓衰切析赠偷伟砍岸盘凭种款简沃质予羚份弃掠氮届桩任利舟纵投则航宗够莲售训杜巩啼申谦抹宴辖嫂施终预召函备默玲祝兼合衡捧颂症谋趁矛献壮目珊俊削桑绪癌朴氏肩颇准式谐裁夜邓吨艇库槽刮抓硫醇辉扭株户斥序怨晴戈徐杆销篇妥挑宙坑犹戒逆驻段例追础牡蹄匙概队抽傅缩庆穴顷瘤疫润森盾拍霍咳剂罪极违饶租义监译迁趣鹊埋抢谱番性匀碌柳塌舰彻引调慎湾涉据岂委敬股沸履萄夺怀帝钓役棕捷距洪寄蟹萧鲁既潜柄整脉僚鸽且雕藻最顿垄栏访附感萎秦趋屏唤宪欣疆脆牧轴娱若旦温辟恼替字洒呈代币猩磷昂聚虑渡兄逐瘦自述辑旋策渐撒毁甚吻棉督灾凳掘嫌疾隶掩坐唾宣遭熔愈匠状喇轿贾垫氧翠压愤遥拐率绣峡杨尸敏烛赏渔木艰裤淹握巡仲崇议揭诺慰济挺烈惩待官矣经唉障氯幻伦耸纷做噪泊敌瑞泌仔珠孝勉智赫构雅砖鸦穆凑枯著周狱尽宋泉初标亩朗茅陵牺泻料贺恰宿悦索乳棚浩搞钉重域左径碳趟寺俗挂亭坝洛设诞绸艳培血沿炮屠胀权竹都皂辩插隙肯浇许虽览滨筑窃拳维娇慨纤碍走依狐搭庙寿吴亡豪堪鸣蓄钾医询昨陡崖泽畅妙碱蒸筹乔拒谷职帘签刊鞭态势帆循奉配旨蕴暂帐韵垂栽吸覆哀卑作暗萍岗围奈尊敦寂州晰劝副仇洲菲峻庞雄中总僵嘴廷徽嗅颁氨骄优埃懂略惧煌邦怒披繁县忠主况治足携霞含舱括罐键彼响搅疏哄呆慈呵钻布唇慕即蛮葫婶朱醉艘赖蛛搬瓦散翔启休倦恨伏茫昏脂哗软组俺弦效粪漠坊辅壁纺惑稻扬拉墓续碑郊遮短滋织脊怜缺裕尚您嫁抵奴推诱扮逝玄勒鲤私腺孵绒驰哟途纬厂遵搜蒜跃恶亦孔侵踪胡裸恩泄愚咸掏纳纠模胶退籍哑缓赚丈躺崩丹泪闷振驾项察稼批牵漏她绕此笋熬适撤复焰饲砌皱枕务犁浙朝添谊僧污枢殖剥宰置畜残贸盈富结遣翅譬漆隐助欲硝差抑挪征旱赔规领展付殊朽梁溉扑厢竖获席胚疼狭众吼诊郁陶肾炉鸿祸及廉钢毅烟搏沾导诸宅袖躁驱晓拢截降促汇逸竭局逮婚悉耀忽但宜皆竞党镜堵臣瓣专援倡瞅赋迅捉辈装辨尘永寓裹嗓吞府示源燥傍愉液叙仓雁瞬肢虚丘煮拾枚详证曰审梢族浸旺子挨划异炸络史曲姆嫩磁蚕粮尤钙伊倾财惹阳牌仅悲泛催牲痛免协俩孕礁桌硅蒋省央伍髓叠盼腔另愧蝇磨巧迹染刻映爪灿腾囊娶炎焦疑悄鉴误潭酬争紫誉芬住盯籽拼炼仰瓷扩亿吟肿橡奔逼践挣愁估宏柜纲箭赤蚯秀补悬叭冶卢蝙革撕藤淡挽惟均喘玻缠母腹夕津拨令缝霜志显枝翻赌溃攀纱栖独益抒陷渗矩姿壤吁颈捕烦普码至淀扁稳灌庄介睁蚀理律波惨滩骤顽遍桂蓬互锻塘疲稍社劲浑帕猪避陕膝蜘缸升蔽扎躯坛乎锋杂郎饱击阀危拱陆嚷颠爷蝴淮乙叛驳限控嘱铺肺涨杉晋眠撞锡葛烂衫飘跨掀贯妨仪丧粒贮净屑潮湘忆制境蹲灶穷岩奏媳侍塑基闲仗辱妇论罢饰胁熙列爹鹤某佛祥署军责尔钟近隔账阶溢酿爆绩晨衍候绍卵斜剖捞供柏窄兆修突契溶增破坦殿罕筒歇腊兹肪渣幕衬转宾勤禽衔毫炭趾仿瓢蚓荒坟贩凝拖哲娜", 
+			
+			    //拓展篇
+			    "筝铸缎膛猬哮逗呐睐誊贬赁毡颊矾尉泵鄂暮垢瑰拣樟镀陋屹讹腥砰焚酵颅刨舔镶剃嗽勘绰雳窖坎贱幌婉痢栗擒杖衙妒妮榄捣霹辙咄眶窘跪谨逾霄伶羡坷赐沁瑙佑蜀啄赡榜匕搀馋虏捍蹬榔刃邑讳痹斌嚣匾俯仆怠婪谤帚靡蒂咙锈揩倘盹寡挎渊聆咨芥讽馁鹦酗禹伺咐滞炫吝粹氓洼冤臀辜磅酣谅芯绊佐汰痪檬禅淌栋锌鸳揣翰脯讥柑畴兢垛浊钦靶怯呕倚茵尧蟀皖硕梭悍懦烘柬宛秧祷蝎蜻夯乞贻胧缕捐栓吆祟捅嘹翘壬憋驯棺桨蠕渺蜒恍韧岖疹乍缀跋铭蹂酪槐枉聂唆吭惶寝瞻槛畸椒弘痊澜拯莽拙曙夭腮丐锣扳秃沐熏淤俐洽酥栈徙恕玷榕帖涧敞揪吠缚馏潘沼擂斟锰巳瞳泞缴搔吩盔搁峨芙庶蜗蔓拄侣琼钧咋旷锯腋讶渲渝屯嘲殃芹吮怡肮逛掂骚烙娄惭眯呛揽姻曝叼卉咧殴袱贞亥檐淫趴蓉逊狰恤悯仑鄙隧颖崛溅寞饵秩馒侮驮楷酌襟娟谆嗦镰漾簸凛馈闽琢赂敷荐晦昭疤鹃谚瞭彪甫惰擅歼寥坤禾诽磕懊厕撰苇肋骇躏漓菱秆稽茁赦涯肴靖舵榆囱匿哉窜咖奢缤睬鳍窿盏乾迄腻裳摧雇掰俘朦爵粱坪踊荤缰妃瑟绢澈斋耘瘪拎妓孽徊巍拘蝗豁恬钳隅讼溯沈沮旭弊凄缉乒侄鞍谬撼脐藐焊戎垦宦拗昔棱冗诲匪筏潇咏忱梧闺戊抡禄濒幢沪聘漱惫姊迭遏徘憾箫档馨岔稠褂褥猿娥柠撩墩瘩祭凿囤糙蠢疙砚喧垮鲍廓煞迢涩嵌衅彰禀冈汞慷椿屿荔褪绎耙坯舶吱篡魅捺唁瓤崎羹茧畔矢缭啰侈箕卯钝骡铐啸涵呻戌秽嫉沧滔邪袍畏闸擎轧撮诵戳缔玖殷苛琳汝觅疮掷墅灸椭堰弧贰椰悖薪兑躬烁彭衷逞氛掺绞鳞琅竣耻吏框纫滇棠闰叁蹭扛彤叨篓剔莹钞挟谭瘾祈肘稚谣啤痘炊荧粤悴踱窒碘涡翩唬墟蜈诡暇瘟驹绑磊簿蛤睦沽栅崭琐糠蚤涕惋兜隘搓惕窑尴樱苟薇蔗糯薛跛簇篷橱迂摹沛榴垒窟峭煎崔琉陨贿庐耿忿脓矗煽撵紊苔竿勋浏淆晾绷侠昧拽湃募蟋祠雏猖蔑菩瞩砾瘸皓痴啃杠凸莺筐悼甥锹叩醋哺捌冥酝卦茸汹雹昼骏瘫绽奠溺鹉卿庇芋焉痰诬挫灼誓熄褒桔鳖跤旬寇挠寨巅荆蛀坠壹拭豌眷匣侥筛羔敛絮瞄嗜屎猾弛辗撇拷甸喳斩赃侨怖倔蚌缆冉押梆殉妆疟掐癣埂屉酉疚堕舀埠谍恳拴铛淑佣耽涮峦佃渠臼鬓霎鲫卤晌烹澎唠舆庚删梳董柒诈篱绅魄皿抠黔沥蔚窥俏懈跷扒鼎帜凰捶狞蕊扼蜕憔魁彬囚梗窍癸拂揍姚宵笙韭毙搂撬馅靴秸偎捻涝姥冀哆乓睹鸯苞腕捆谴鞠渤蛾捎妄沦缅焕橄汛睫贷涤隋碾唧聋藉铲臊箩阎蟆尬揉粟屡棘俭憨赣炬狈蚣黯榨卒刁锥赎锚蝌卓绚媚蹋庸钮诫淳劈辫歹芜虐嚎肛锄颓赘亢剿椎奸茬啪惦婿轩恃檀胰涣祀嘶镑泣庵蔼勺瞒簧憎肇愕帷镐秉豺拧挚寅怔荫僻矫狡肆",
+				
+				
+			    //复习篇
+				"筝铸缎膛猬哮逗呐睐誊贬赁毡颊矾尉泵鄂暮垢瑰拣樟镀陋屹讹腥砰焚酵颅刨舔镶剃嗽勘绰雳窖坎贱幌婉痢栗擒杖衙妒妮榄捣霹辙咄眶窘跪谨逾霄伶羡坷赐沁瑙佑蜀啄赡榜匕搀馋虏捍蹬榔刃邑讳痹斌嚣匾俯仆怠婪谤帚靡蒂咙锈揩倘盹寡挎渊聆咨芥讽馁鹦酗禹伺咐滞炫吝粹氓洼冤臀辜磅酣谅芯绊佐汰痪檬禅淌栋锌鸳揣翰脯讥柑畴兢垛浊钦靶怯呕倚茵尧蟀皖硕梭悍懦烘柬宛秧祷蝎蜻夯乞贻胧缕捐栓吆祟捅嘹翘壬憋驯棺桨蠕渺蜒恍韧岖疹乍缀跋铭蹂酪槐枉聂唆吭惶寝瞻槛畸椒弘痊澜拯莽拙曙夭腮丐锣扳秃沐熏淤俐洽酥栈徙恕玷榕帖涧敞揪吠缚馏潘沼擂斟锰巳瞳泞缴搔吩盔搁峨芙庶蜗蔓拄侣琼钧咋旷锯腋讶渲渝屯嘲殃芹吮怡肮逛掂骚烙娄惭眯呛揽姻曝叼卉咧殴袱贞亥檐淫趴蓉逊狰恤悯仑鄙隧颖崛溅寞饵秩馒侮驮楷酌襟娟谆嗦镰漾簸凛馈闽琢赂敷荐晦昭疤鹃谚瞭彪甫惰擅歼寥坤禾诽磕懊厕撰苇肋骇躏漓菱秆稽茁赦涯肴靖舵榆囱匿哉窜咖奢缤睬鳍窿盏乾迄腻裳摧雇掰俘朦爵粱坪踊荤缰妃瑟绢澈斋耘瘪拎妓孽徊巍拘蝗豁恬钳隅讼溯沈沮旭弊凄缉乒侄鞍谬撼脐藐焊戎垦宦拗昔棱冗诲匪筏潇咏忱梧闺戊抡禄濒幢沪聘漱惫姊迭遏徘憾箫档馨岔稠褂褥猿娥柠撩墩瘩祭凿囤糙蠢疙砚喧垮鲍廓煞迢涩嵌衅彰禀冈汞慷椿屿荔褪绎耙坯舶吱篡魅捺唁瓤崎羹茧畔矢缭啰侈箕卯钝骡铐啸涵呻戌秽嫉沧滔邪袍畏闸擎轧撮诵戳缔玖殷苛琳汝觅疮掷墅灸椭堰弧贰椰悖薪兑躬烁彭衷逞氛掺绞鳞琅竣耻吏框纫滇棠闰叁蹭扛彤叨篓剔莹钞挟谭瘾祈肘稚谣啤痘炊荧粤悴踱窒碘涡翩唬墟蜈诡暇瘟驹绑磊簿蛤睦沽栅崭琐糠蚤涕惋兜隘搓惕窑尴樱苟薇蔗糯薛跛簇篷橱迂摹沛榴垒窟峭煎崔琉陨贿庐耿忿脓矗煽撵紊苔竿勋浏淆晾绷侠昧拽湃募蟋祠雏猖蔑菩瞩砾瘸皓痴啃杠凸莺筐悼甥锹叩醋哺捌冥酝卦茸汹雹昼骏瘫绽奠溺鹉卿庇芋焉痰诬挫灼誓熄褒桔鳖跤旬寇挠寨巅荆蛀坠壹拭豌眷匣侥筛羔敛絮瞄嗜屎猾弛辗撇拷甸喳斩赃侨怖倔蚌缆冉押梆殉妆疟掐癣埂屉酉疚堕舀埠谍恳拴铛淑佣耽涮峦佃渠臼鬓霎鲫卤晌烹澎唠舆庚删梳董柒诈篱绅魄皿抠黔沥蔚窥俏懈跷扒鼎帜凰捶狞蕊扼蜕憔魁彬囚梗窍癸拂揍姚宵笙韭毙搂撬馅靴秸偎捻涝姥冀哆乓睹鸯苞腕捆谴鞠渤蛾捎妄沦缅焕橄汛睫贷涤隋碾唧聋藉铲臊箩阎蟆尬揉粟屡棘俭憨赣炬狈蚣黯榨卒刁锥赎锚蝌卓绚媚蹋庸钮诫淳劈辫歹芜虐嚎肛锄颓赘亢剿椎奸茬啪惦婿轩恃檀胰涣祀嘶镑泣庵蔼勺瞒簧憎肇愕帷镐秉豺拧挚寅怔荫僻矫狡肆"
+				];
+		//var totalWords=wordsGroup[0]+wordsGroup[1]+wordsGroup[2];
+		//for(var j=0; j<totalWords.length;j++) {
+		//    console.log(totalWords[j]+":"+tounicode(totalWords[j])+":"+totalWords[j]);
+		//}
+		
+		//取出对应level字库后，先将字库随机排序，再返回
+		var retWords="";
+		var count=wordsGroup[level].length; 
+        var originalArray=new Array;
+        for (var i=0;i<count;i++){ 
+            originalArray[i]=i; 
+        } 
+		//console.log(originalArray);
+		originalArray.sort(function(){ return 0.5 - Math.random(); }); 
+		//console.log(originalArray);
+		for(var i=0; i<count; i++) {
+		    retWords+=wordsGroup[level][originalArray[i]];
+		}
+		return retWords;
+	}
+
+	function showNextWord() {
+		var word = window.words[window.seq];
+		$("#aword").text(word);
+		$("#stroke").html("<img src='https://www.hanzi5.com/assets/bishun/animation/"+tounicode(word)+"-bishun.gif'/>");
+
+	}
+
+	function readFromTTS(ttsText, speed) {
+	    if(speed == null ){
+		    speed = 1;
+		}
+		//var srcAudio = 'http://tts.baidu.com/text2audio?lan=zh&ie=UTF-8&spd='+speed+'&text='+ttsText;
+		var srcAudio = "http://fanyi.baidu.com/gettts?lan=zh&ie=UTF-8&pid=101&text="+ttsText+"&spd="+speed+"&source=web";
+        playSound(srcAudio);
+	};
+
+	$(document).ready(
+			function() {
+				showSelectView();
+				$("#gui").on("change","input[type='radio']",function(){
+					//window.words = selectWordLevel($("input[type='radio']:checked").val());
+					window.words=selectWordLevel(this.value);
+				});
+				
+				$("#gui").on("change","input[type='color']",function(){
+				    //$(".card").css("background",document.getElementById("bgcolor").value);
+					$(".card").css("background",this.value);
+				});
+				
+                $("#gui").on("click","button",function(){
+					switch(this.id) {
+					    case "knowit":
+						    doYes();
+							break;
+						case "unknowit":
+						    doNo();
+							break;
+						case "readit":
+						    readFromTTS($("#aword").text());
+							break;
+						case "viewscore":
+						    getScore();
+							break;
+						case "startButton":
+						    startNow();
+							break;
+						default:
+						    break;					
+
+					};
+				    
+				});	
+            $('#popup').popup({ifDrag: true, dragLimit: true});	
+            if(window.screen.width < window.screen.height) {
+                $('.card').css("width","100%");
+				$('.aword').css("width","95%");
+				$('button').css("width","15%");
+				$('.card img').css("width","75%");
+			}			
+			});
+</script>
+</head>
+<body>
+	<div id="gui" class="card align-center">
+	    <div id="bgcolordiv" class="align-center" style="color: white;"><input type="color" id="bgcolor" value="#124191"></div>
+		<div id="aword" class="header align-center"><img src="./study_files/logo.png"><br><h4>选择挑战难度：</h4><input type="radio" name="wordlevel" value="0">初级难度<br><input type="radio" name="wordlevel" value="1">中级难度<br><input type="radio" name="wordlevel" value="2">高级难度<br><input type="radio" name="wordlevel" value="3">拓展篇<br><input type="radio" name="wordlevel" value="4">复习篇<br><br><button class="button button-raised button-royal" id="startButton">Go</button></div>
+		<div id="controlview" class="body" style="display: none">
+			<button id="knowit" class="button  button-royal"> √</button>
+			<button id="readit" class="button button-pill button-tiny"> 音 </button>
+			<button id="btn1" class="button button-pill button-tiny">写</button>
+			<button id="viewscore" class="button button-pill button-tiny"> 分 </button>
+			<button id="unknowit" class="button  button-caution">×</button>
+		</div>
+	</div>
+	
+	<div id="popup" style="left: 618px; opacity: 0; top: 150px; display: none;">
+        <div class="title">
+          <p data-title="书写笔顺" style=" margin-top:0;margin-bottom:0;">书写笔顺</p>
+          <span>x</span>
+        </div>
+        <div id="stroke" class="cont"></div>
+    </div>
+
+
+
+</body></html>
