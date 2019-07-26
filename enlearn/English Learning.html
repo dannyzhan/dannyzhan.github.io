@@ -123,9 +123,9 @@ input[type="color"]::-webkit-color-swatch {
 	window.scores = 0;
 	window.words = "";
 	window.unknowwords="";
-	window.fontSize="200px";
+	window.fontSize="100px";
 	if(window.screen.width < window.screen.height) {
-	    window.fontSize="200px";
+	    window.fontSize="100px";
 	}
 	
 	function decodeUtf8(bytes) {
@@ -2881,7 +2881,10 @@ wear`
          dataType: "xml",  // 服务器响应的数据类型
          success : function (data) {  // readystate == 4 && status == 200
              $('#stroke').html("<p>"+$(data).children().text()+"</p>");  // data是一个dom对象, 先将其转化为jquery对象
-         }
+         },
+		 error:function(err){  
+                         console.log(err);  
+             }  
      });
 
 		
@@ -2898,6 +2901,9 @@ wear`
 		}
 		//var srcAudio = 'http://tts.baidu.com/text2audio?lan=zh&ie=UTF-8&spd='+speed+'&text='+ttsText;
 		var srcAudio = "http://dict.youdao.com/dictvoice?audio="+ttsText;
+		if(ttsText.indexOf('\r\n')>-1){
+			srcAudio = 'http://media.shanbay.com/audio/us/'+ttsText+'.mp3';
+		}
         playSound(srcAudio);
 	};
 
