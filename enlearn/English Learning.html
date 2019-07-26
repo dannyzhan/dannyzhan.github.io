@@ -1,0 +1,2973 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0038)https://datapie.top/cnlearn/index.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+<title>汉字学习</title>
+<link rel="stylesheet" href="./study_files/buttons.css">
+<script src="./study_files/jquery-3.3.1.min.js.download"></script>
+<script src="./study_files/popup.js.download"></script>
+<style>
+body {
+	text-align: center
+}
+
+
+input{
+    border:1;
+	padding:0;
+	margin:0;
+    outline:0;
+	background-color:transparent;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+    border: 0;
+}
+.gui {
+    width: 100%;
+	height: 450px;
+}
+.card {
+	width: 100%;
+	height: 450px;
+	background: #124191; 
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 8px 0 rgba(0, 0, 0, 0.19);
+	text-align: center;
+	border-radius: 5px;
+}
+
+.header {
+	color: #fff;
+	font-size: 20px;
+}
+
+.body {
+	/*padding: 10px;*/
+	font-family: "Microsoft Yahei"; 
+}
+
+.card img {
+	width: 70%;
+}
+
+.align-center {
+	margin:0 auto;
+	text-align: center; 
+}
+
+#mask_shadow {
+  display: none;
+  opacity: 0;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
+}
+#popup {
+  display: none;
+  opacity: 0; 
+  position: absolute;
+  z-index: 2;
+  //top: 5px;
+  width: 300px;
+  height: 300px;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5);
+   background-color: #EDEDED; 
+}
+#popup .title {
+  position: relative;
+  width: 100%;
+  //height: 50px;
+  //background-color: #5bc0de;
+  cursor: move;
+}
+#popup .title p {
+  /*padding-left: 14px;*/
+  //line-height: 40px;
+  //color: #fff;
+}
+#popup .title span {
+  position: absolute;
+  margin-top:0;
+  margin-bottom:0;
+  top: 0;
+  right: 1px;
+  width: 26px;
+  //height: 30px;
+  color: #000;
+  opacity: .2;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+  border: 1px solid #333;
+}
+#popup .title span:hover {
+  opacity: .8;
+}
+.cont { width: 300px; height: 300px;   }
+
+</style>
+
+<script type="text/javascript">
+    window.timmer = 60;
+	window.seq = 0;
+	window.scores = 0;
+	window.words = "";
+	window.unknowwords="";
+	window.fontSize="200px";
+	if(window.screen.width < window.screen.height) {
+	    window.fontSize="200px";
+	}
+	
+	function decodeUtf8(bytes) {
+    var encoded = "";
+        for (var i = 0; i < bytes.length; i++) {
+            encoded += '%' + bytes[i].toString(16);
+        }
+        return decodeURIComponent(encoded);
+    }
+
+	function tounicode(data){
+       var str =''; 
+       for(var i=0;i<data.length;i++)
+       {
+          str+=parseInt(data[i].charCodeAt(0),10).toString(16);
+       }
+       return str;
+    }
+	
+    function tohanzi(inData){
+        var data = inData.split('\\u');
+        var str ='';
+        for(var i=0;i<data.length;i++)
+        {
+            str+=String.fromCharCode(parseInt(data[i],16).toString(10));
+        }
+        return str;
+    }
+	
+	function fomatFloat(src, pos) {
+		return Math.round(src * Math.pow(10, pos)) / Math.pow(10, pos);
+	}
+
+	function randomValue(lowerValue, upperValue) {
+		return Math.floor(Math.random() * (upperValue - lowerValue + 1)
+				+ lowerValue);
+	}
+
+	function sleep(numberMillis) {
+		var now = new Date();
+		var exitTime = now.getTime() + numberMillis;
+		while (true) {
+			now = new Date();
+			if (now.getTime() > exitTime)
+				return;
+		}
+	}
+
+	function imbolden(text) {
+	    playSound("audio/"+text+".mp3");
+	}
+	
+	function playSound(src) {
+	    var audio = new Audio(src);
+		audio.play();
+	}
+	
+	function doYes() {
+		if (checkOver() > 0) {
+			imbolden("zhenbang");
+			window.seq += 1;
+			window.scores += 1;
+			showNextWord();
+		}
+	}
+
+	function getScore() {
+		var score = window.scores / window.seq * 100;
+		alert("你的挑战进度:"+window.seq+",当前得分:" + fomatFloat(score, 1) + ", 继续加油！");
+	}
+	
+	function checkOver() {
+	    var MAX_QUESTION = 100;
+		if (window.seq >= MAX_QUESTION) {
+		    $.get("savewords.php?words="+window.unknowwords, function(result){
+			    window.unknowwords="";
+			});
+			var score = window.scores / window.seq * 100;
+			alert("挑战结束, 你的最终得分为: " + fomatFloat(score, 1));
+			window.seq = 0;
+			window.scores = 0;
+
+			$("#controlview").hide();
+			$("#aword").css("fontSize", "40px");
+			showSelectView();
+			return 0;
+		} else {
+
+			return 1;
+		}
+
+	}
+	function doNo() {
+		if (checkOver() > 0) {
+		    imbolden("jiayou");
+			window.seq += 1;
+			var aword = $("#aword").text();
+			if(window.unknowwords.indexOf(aword) == -1) {
+			    window.unknowwords+=aword;
+			}
+			showNextWord();
+		}
+
+	}
+	
+	function Element(type) {
+	    return document.createElement(type);
+	}
+
+	function showSelectView() {
+	    $("#bgcolordiv").css('color','white');
+	    $("#bgcolordiv").show();
+		$("#aword").html("<img src='./img/logo.png' /><br/><h4>选择挑战难度：</h4>");
+	    var wordView = document.getElementById('aword');
+		//wordView.innerHTML = "<h2>认字挑战</h2><h4>选择挑战难度：</h4>";
+		
+		var level=["初级难度","中级难度","高级难度","拓展篇","复习篇"];
+		
+		for(var i=0;i<level.length;i++){
+		    var wordsLevelRadio = Element("input");
+		    wordsLevelRadio.setAttribute('type', 'radio');
+		    wordsLevelRadio.setAttribute('name', 'wordlevel');
+		    wordsLevelRadio.setAttribute('value', i);
+		    wordView.appendChild(wordsLevelRadio);
+		    wordView.append(level[i]);
+		    wordView.appendChild(Element('br'));
+		}
+		
+		wordView.appendChild(Element('br'));
+		var startButton = Element('button');
+		startButton.setAttribute('class', 'button button-raised button-royal');
+		startButton.setAttribute('id', 'startButton');
+		startButton.append('Go');
+		wordView.appendChild(startButton);
+	}
+
+	function startNow() {
+	    if(window.words == "") {
+		    alert("你还没有选择挑战难度!");
+			return;
+		}
+	    imbolden("tiaozhankaishi");
+	    $("#bgcolordiv").hide();
+		$("#controlview").show('slow',function(){
+		    $("#aword").css("fontSize", window.fontSize);
+			$("#aword").css("font-family","楷体");
+			window.timmer = 3;
+			$("#aword").text(window.timmer);
+		    window.timehwnd=setInterval("Countdown()",1000);
+		});
+	}
+	
+	function Countdown(){   
+        window.timmer--;    
+        if(window.timmer == 0){
+            clearInterval(window.timehwnd);
+			showNextWord();
+        }
+		else{
+		    if(window.timmer == 1) {
+			    //imbolden("tiaozhankaishi");
+			}
+			
+            $("#aword").text(window.timmer);
+        }		
+    }
+
+	function selectWordLevel(level) {
+		var wordsGroup = [
+		        `January
+February        
+March                
+April          
+May  
+June 
+July         
+August           
+September    
+October     
+November 
+December
+mobile
+pratice
+dead/die
+dictionary
+diploma
+examination
+Mr. 
+Mrs. 
+bathroom
+bedroom
+blanket
+bookshelf
+bowl
+chair
+T-shirt
+air
+beach
+cloud
+grass
+grow
+hill
+hot
+sea
+sky
+snow
+south
+water
+weather
+west
+wet
+cold
+country
+countryside
+east
+field
+fire
+flower
+fog
+foggy
+forest
+ice
+island
+lake
+moon
+mountain
+north
+plant
+rain
+river
+space
+spring
+star
+storm
+summer
+sun
+sunny
+thunderstorm
+tree
+warm
+wind
+windy
+winter
+wood
+wool
+world
+barbecue
+chips
+biscuit
+bit of cake
+boil
+bottle
+chocolate
+coffee
+cook
+cooker
+cream
+dinner
+hungry
+ice cream
+jam
+juice
+kitchen
+lemon
+piece of cake
+pizza
+plate
+potato
+roast
+salad
+salt
+bowl
+breakfast
+burger
+burn
+butter
+carrot
+cheese
+chicken
+dish
+drink
+fork
+fridge
+fried
+fruit
+grape
+steak
+sugar
+sweet
+thirsty
+tomato
+vegetable
+waiter
+waitress
+onion
+meat
+pepper
+lemonade
+main course
+menu
+mineral water
+pasta
+picnic
+sandwich
+slice
+snack
+soup
+cake
+omelette
+meal
+grill
+grilled
+airport
+ambulance
+brake
+bridge
+arrive
+flight
+garage
+helicopter
+journey
+leave
+left
+passport
+petrol
+petrol station
+pilot
+plane
+platform
+police car
+problem
+suitcase
+ticket
+tour
+tour guide
+tourist
+traffic
+canal
+coach
+crossroads
+delay
+driving licence
+engine
+engineer
+lorry
+luggage
+mechanic
+mile
+mirror
+motorway
+park
+passenger
+railway
+roundabout
+traffic lights
+travel agent
+underground
+wheel
+apartment
+bank
+bookshop
+building
+bus station
+campsite
+castle
+cathedral
+centre
+church
+cinema
+club
+city
+college
+corner
+department store
+disco
+entrance
+exhibition
+exit
+factory
+farm
+flat
+guesthouse
+hospital
+hotel
+library
+lift
+market
+museum
+newsagent
+post office
+restaurant
+ruin
+sports centre
+square
+stadium
+supermarket
+theatre
+tourist information centre
+travel agent
+university
+village
+zoo
+appointment
+autumn
+birthday
+century
+daily
+holidays
+midnight
+moment
+noon
+spring
+summer
+weekend
+weekly
+advertisement
+art
+band
+camera
+cassette
+competition
+concert
+conversation
+drum
+exhibition
+email
+guidebook
+guitar
+information
+internet
+journalist
+magazine
+mouse
+museum
+painter
+photography
+prize
+programme
+project
+website
+present
+actor
+artist
+businessman
+chemist
+colleague
+company
+computer
+customer
+dentist
+diploma
+doctor
+driver
+earn
+engineer
+guest
+guide
+hairdresser
+instructions
+journalist
+mechanic
+nurse
+occupation
+painter
+pharmacy
+photographer
+pilot
+receptionist
+secretary
+shop assistant
+staff
+tour guide
+uniform
+accident
+ambulance
+appointment
+arm
+body
+back
+check
+chemist
+comb
+dangerous
+dentist
+feel
+hospital
+hurt
+insurance
+medicine
+neck
+problem
+soap
+sick
+stomach
+toothbrush
+pain
+lie down
+burn
+centimeter
+degree
+kilometre
+litre
+metre
+mile
+minute
+moment
+quarter
+second
+temperature
+week
+year
+bill
+book
+card
+diploma
+form
+insurance
+licence
+magazine
+menu
+message
+newspaper
+note
+passport
+postcard
+project
+assistant
+bookshop
+cash
+change
+cheap
+cheque
+closed
+cost
+customer
+department store
+dollar
+Euro
+expensive
+for sale
+pay for
+pence
+penny
+pound
+shop assistant
+supermarket
+try on
+beginner
+board
+bookshelf
+college
+course
+Geography
+History
+homework
+information
+instructions
+language
+learn
+level
+library
+Mathematics
+pupil
+remember
+school
+Science
+subject
+university
+brother
+child
+colleague
+cousin
+daughter
+family
+friend
+grandchild
+granddaughter
+grandmother
+grandparent
+grandson
+husband
+love
+married
+Ms
+neighbour
+pen-friend
+surname
+teenager
+guest
+baseball
+basketball
+beach
+bicycle
+bike
+boat
+camera
+camp
+campsite
+catch
+climb
+club
+competition
+football
+game
+golf
+hobby
+hockey
+holidays
+luck
+magazine
+member
+party
+picnic
+pool
+prize
+race
+riding
+sailing
+skiing
+sports centre
+stadium
+swimming
+table tennis
+team
+tent
+throw
+tired
+trainers
+volleyball
+watch
+winner
+address
+downstairs
+flat
+floor
+furniture
+garage
+garden
+gate
+hall
+kitchen
+living room
+pillow
+plate
+roof
+shower
+sitting room
+sofa
+toilet
+towel
+bag
+belt
+blouse
+boot
+clothes
+coat
+dress
+glasses
+hat
+jacket
+jeans
+pocket
+purse
+raincoat
+shirt
+shoe
+shorts
+skirt
+suit
+sweater
+tights
+trainers
+trousers
+try on
+umbrella
+uniform
+wallet
+wear`,
+				//"一二三四五六七八九十百千加减乘除大小多少长短方圆前后左右上下里外远近高矮出入开关起落来去轻重快慢有无空满凉热冷暖真假好坏生熟湿干粗细软硬横竖直弯正斜薄厚宽窄深浅春夏秋冬阴晴早晚东南西北酸甜苦辣日月水火山石土田天地星云风雨雷电衣帽鞋袜巾帕枕垫杯瓶壶桶钟表灯扇勺筷刀叉锅碗盘盆镜梳床凳钉铲针线琴棋书画笔纸尺盒伞烛鼓铃球筒箱包瓜果梨桃饭菜米面葱姜蒜椒糕饼蛋糖柿茄菠豆莓李橙蕉红黄蓝绿紫粉白黑花草树木梅兰竹菊冰雪沙虹江河海瀑桌椅门窗机车船帆枝叶芽苗杨柳松桦哥姐弟妹爷奶爸妈你我他她男女老幼眼耳口鼻手足牙脸人身头发师生工医哭笑喜怒吃喝醒睡走跑坐卧摸爬站立折剪编涂滑骑抱玩写指举拍看想拿洗鸟兽虫鱼猫狗兔雁猪马牛羊鸡鸭鹅燕",
+				`January
+February        
+March                
+April          
+May  
+June 
+July         
+August           
+September    
+October     
+November 
+December
+mobile
+pratice
+dead/die
+dictionary
+diploma
+examination
+Mr. 
+Mrs. 
+bathroom
+bedroom
+blanket
+bookshelf
+bowl
+chair
+T-shirt
+air
+beach
+cloud
+grass
+grow
+hill
+hot
+sea
+sky
+snow
+south
+water
+weather
+west
+wet
+cold
+country
+countryside
+east
+field
+fire
+flower
+fog
+foggy
+forest
+ice
+island
+lake
+moon
+mountain
+north
+plant
+rain
+river
+space
+spring
+star
+storm
+summer
+sun
+sunny
+thunderstorm
+tree
+warm
+wind
+windy
+winter
+wood
+wool
+world
+barbecue
+chips
+biscuit
+bit of cake
+boil
+bottle
+chocolate
+coffee
+cook
+cooker
+cream
+dinner
+hungry
+ice cream
+jam
+juice
+kitchen
+lemon
+piece of cake
+pizza
+plate
+potato
+roast
+salad
+salt
+bowl
+breakfast
+burger
+burn
+butter
+carrot
+cheese
+chicken
+dish
+drink
+fork
+fridge
+fried
+fruit
+grape
+steak
+sugar
+sweet
+thirsty
+tomato
+vegetable
+waiter
+waitress
+onion
+meat
+pepper
+lemonade
+main course
+menu
+mineral water
+pasta
+picnic
+sandwich
+slice
+snack
+soup
+cake
+omelette
+meal
+grill
+grilled
+airport
+ambulance
+brake
+bridge
+arrive
+flight
+garage
+helicopter
+journey
+leave
+left
+passport
+petrol
+petrol station
+pilot
+plane
+platform
+police car
+problem
+suitcase
+ticket
+tour
+tour guide
+tourist
+traffic
+canal
+coach
+crossroads
+delay
+driving licence
+engine
+engineer
+lorry
+luggage
+mechanic
+mile
+mirror
+motorway
+park
+passenger
+railway
+roundabout
+traffic lights
+travel agent
+underground
+wheel
+apartment
+bank
+bookshop
+building
+bus station
+campsite
+castle
+cathedral
+centre
+church
+cinema
+club
+city
+college
+corner
+department store
+disco
+entrance
+exhibition
+exit
+factory
+farm
+flat
+guesthouse
+hospital
+hotel
+library
+lift
+market
+museum
+newsagent
+post office
+restaurant
+ruin
+sports centre
+square
+stadium
+supermarket
+theatre
+tourist information centre
+travel agent
+university
+village
+zoo
+appointment
+autumn
+birthday
+century
+daily
+holidays
+midnight
+moment
+noon
+spring
+summer
+weekend
+weekly
+advertisement
+art
+band
+camera
+cassette
+competition
+concert
+conversation
+drum
+exhibition
+email
+guidebook
+guitar
+information
+internet
+journalist
+magazine
+mouse
+museum
+painter
+photography
+prize
+programme
+project
+website
+present
+actor
+artist
+businessman
+chemist
+colleague
+company
+computer
+customer
+dentist
+diploma
+doctor
+driver
+earn
+engineer
+guest
+guide
+hairdresser
+instructions
+journalist
+mechanic
+nurse
+occupation
+painter
+pharmacy
+photographer
+pilot
+receptionist
+secretary
+shop assistant
+staff
+tour guide
+uniform
+accident
+ambulance
+appointment
+arm
+body
+back
+check
+chemist
+comb
+dangerous
+dentist
+feel
+hospital
+hurt
+insurance
+medicine
+neck
+problem
+soap
+sick
+stomach
+toothbrush
+pain
+lie down
+burn
+centimeter
+degree
+kilometre
+litre
+metre
+mile
+minute
+moment
+quarter
+second
+temperature
+week
+year
+bill
+book
+card
+diploma
+form
+insurance
+licence
+magazine
+menu
+message
+newspaper
+note
+passport
+postcard
+project
+assistant
+bookshop
+cash
+change
+cheap
+cheque
+closed
+cost
+customer
+department store
+dollar
+Euro
+expensive
+for sale
+pay for
+pence
+penny
+pound
+shop assistant
+supermarket
+try on
+beginner
+board
+bookshelf
+college
+course
+Geography
+History
+homework
+information
+instructions
+language
+learn
+level
+library
+Mathematics
+pupil
+remember
+school
+Science
+subject
+university
+brother
+child
+colleague
+cousin
+daughter
+family
+friend
+grandchild
+granddaughter
+grandmother
+grandparent
+grandson
+husband
+love
+married
+Ms
+neighbour
+pen-friend
+surname
+teenager
+guest
+baseball
+basketball
+beach
+bicycle
+bike
+boat
+camera
+camp
+campsite
+catch
+climb
+club
+competition
+football
+game
+golf
+hobby
+hockey
+holidays
+luck
+magazine
+member
+party
+picnic
+pool
+prize
+race
+riding
+sailing
+skiing
+sports centre
+stadium
+swimming
+table tennis
+team
+tent
+throw
+tired
+trainers
+volleyball
+watch
+winner
+address
+downstairs
+flat
+floor
+furniture
+garage
+garden
+gate
+hall
+kitchen
+living room
+pillow
+plate
+roof
+shower
+sitting room
+sofa
+toilet
+towel
+bag
+belt
+blouse
+boot
+clothes
+coat
+dress
+glasses
+hat
+jacket
+jeans
+pocket
+purse
+raincoat
+shirt
+shoe
+shorts
+skirt
+suit
+sweater
+tights
+trainers
+trousers
+try on
+umbrella
+uniform
+wallet
+wear`,
+				`January
+February        
+March                
+April          
+May  
+June 
+July         
+August           
+September    
+October     
+November 
+December
+mobile
+pratice
+dead/die
+dictionary
+diploma
+examination
+Mr. 
+Mrs. 
+bathroom
+bedroom
+blanket
+bookshelf
+bowl
+chair
+T-shirt
+air
+beach
+cloud
+grass
+grow
+hill
+hot
+sea
+sky
+snow
+south
+water
+weather
+west
+wet
+cold
+country
+countryside
+east
+field
+fire
+flower
+fog
+foggy
+forest
+ice
+island
+lake
+moon
+mountain
+north
+plant
+rain
+river
+space
+spring
+star
+storm
+summer
+sun
+sunny
+thunderstorm
+tree
+warm
+wind
+windy
+winter
+wood
+wool
+world
+barbecue
+chips
+biscuit
+bit of cake
+boil
+bottle
+chocolate
+coffee
+cook
+cooker
+cream
+dinner
+hungry
+ice cream
+jam
+juice
+kitchen
+lemon
+piece of cake
+pizza
+plate
+potato
+roast
+salad
+salt
+bowl
+breakfast
+burger
+burn
+butter
+carrot
+cheese
+chicken
+dish
+drink
+fork
+fridge
+fried
+fruit
+grape
+steak
+sugar
+sweet
+thirsty
+tomato
+vegetable
+waiter
+waitress
+onion
+meat
+pepper
+lemonade
+main course
+menu
+mineral water
+pasta
+picnic
+sandwich
+slice
+snack
+soup
+cake
+omelette
+meal
+grill
+grilled
+airport
+ambulance
+brake
+bridge
+arrive
+flight
+garage
+helicopter
+journey
+leave
+left
+passport
+petrol
+petrol station
+pilot
+plane
+platform
+police car
+problem
+suitcase
+ticket
+tour
+tour guide
+tourist
+traffic
+canal
+coach
+crossroads
+delay
+driving licence
+engine
+engineer
+lorry
+luggage
+mechanic
+mile
+mirror
+motorway
+park
+passenger
+railway
+roundabout
+traffic lights
+travel agent
+underground
+wheel
+apartment
+bank
+bookshop
+building
+bus station
+campsite
+castle
+cathedral
+centre
+church
+cinema
+club
+city
+college
+corner
+department store
+disco
+entrance
+exhibition
+exit
+factory
+farm
+flat
+guesthouse
+hospital
+hotel
+library
+lift
+market
+museum
+newsagent
+post office
+restaurant
+ruin
+sports centre
+square
+stadium
+supermarket
+theatre
+tourist information centre
+travel agent
+university
+village
+zoo
+appointment
+autumn
+birthday
+century
+daily
+holidays
+midnight
+moment
+noon
+spring
+summer
+weekend
+weekly
+advertisement
+art
+band
+camera
+cassette
+competition
+concert
+conversation
+drum
+exhibition
+email
+guidebook
+guitar
+information
+internet
+journalist
+magazine
+mouse
+museum
+painter
+photography
+prize
+programme
+project
+website
+present
+actor
+artist
+businessman
+chemist
+colleague
+company
+computer
+customer
+dentist
+diploma
+doctor
+driver
+earn
+engineer
+guest
+guide
+hairdresser
+instructions
+journalist
+mechanic
+nurse
+occupation
+painter
+pharmacy
+photographer
+pilot
+receptionist
+secretary
+shop assistant
+staff
+tour guide
+uniform
+accident
+ambulance
+appointment
+arm
+body
+back
+check
+chemist
+comb
+dangerous
+dentist
+feel
+hospital
+hurt
+insurance
+medicine
+neck
+problem
+soap
+sick
+stomach
+toothbrush
+pain
+lie down
+burn
+centimeter
+degree
+kilometre
+litre
+metre
+mile
+minute
+moment
+quarter
+second
+temperature
+week
+year
+bill
+book
+card
+diploma
+form
+insurance
+licence
+magazine
+menu
+message
+newspaper
+note
+passport
+postcard
+project
+assistant
+bookshop
+cash
+change
+cheap
+cheque
+closed
+cost
+customer
+department store
+dollar
+Euro
+expensive
+for sale
+pay for
+pence
+penny
+pound
+shop assistant
+supermarket
+try on
+beginner
+board
+bookshelf
+college
+course
+Geography
+History
+homework
+information
+instructions
+language
+learn
+level
+library
+Mathematics
+pupil
+remember
+school
+Science
+subject
+university
+brother
+child
+colleague
+cousin
+daughter
+family
+friend
+grandchild
+granddaughter
+grandmother
+grandparent
+grandson
+husband
+love
+married
+Ms
+neighbour
+pen-friend
+surname
+teenager
+guest
+baseball
+basketball
+beach
+bicycle
+bike
+boat
+camera
+camp
+campsite
+catch
+climb
+club
+competition
+football
+game
+golf
+hobby
+hockey
+holidays
+luck
+magazine
+member
+party
+picnic
+pool
+prize
+race
+riding
+sailing
+skiing
+sports centre
+stadium
+swimming
+table tennis
+team
+tent
+throw
+tired
+trainers
+volleyball
+watch
+winner
+address
+downstairs
+flat
+floor
+furniture
+garage
+garden
+gate
+hall
+kitchen
+living room
+pillow
+plate
+roof
+shower
+sitting room
+sofa
+toilet
+towel
+bag
+belt
+blouse
+boot
+clothes
+coat
+dress
+glasses
+hat
+jacket
+jeans
+pocket
+purse
+raincoat
+shirt
+shoe
+shorts
+skirt
+suit
+sweater
+tights
+trainers
+trousers
+try on
+umbrella
+uniform
+wallet
+wear`, 
+			
+			    //拓展篇
+			    `January
+February        
+March                
+April          
+May  
+June 
+July         
+August           
+September    
+October     
+November 
+December
+mobile
+pratice
+dead/die
+dictionary
+diploma
+examination
+Mr. 
+Mrs. 
+bathroom
+bedroom
+blanket
+bookshelf
+bowl
+chair
+T-shirt
+air
+beach
+cloud
+grass
+grow
+hill
+hot
+sea
+sky
+snow
+south
+water
+weather
+west
+wet
+cold
+country
+countryside
+east
+field
+fire
+flower
+fog
+foggy
+forest
+ice
+island
+lake
+moon
+mountain
+north
+plant
+rain
+river
+space
+spring
+star
+storm
+summer
+sun
+sunny
+thunderstorm
+tree
+warm
+wind
+windy
+winter
+wood
+wool
+world
+barbecue
+chips
+biscuit
+bit of cake
+boil
+bottle
+chocolate
+coffee
+cook
+cooker
+cream
+dinner
+hungry
+ice cream
+jam
+juice
+kitchen
+lemon
+piece of cake
+pizza
+plate
+potato
+roast
+salad
+salt
+bowl
+breakfast
+burger
+burn
+butter
+carrot
+cheese
+chicken
+dish
+drink
+fork
+fridge
+fried
+fruit
+grape
+steak
+sugar
+sweet
+thirsty
+tomato
+vegetable
+waiter
+waitress
+onion
+meat
+pepper
+lemonade
+main course
+menu
+mineral water
+pasta
+picnic
+sandwich
+slice
+snack
+soup
+cake
+omelette
+meal
+grill
+grilled
+airport
+ambulance
+brake
+bridge
+arrive
+flight
+garage
+helicopter
+journey
+leave
+left
+passport
+petrol
+petrol station
+pilot
+plane
+platform
+police car
+problem
+suitcase
+ticket
+tour
+tour guide
+tourist
+traffic
+canal
+coach
+crossroads
+delay
+driving licence
+engine
+engineer
+lorry
+luggage
+mechanic
+mile
+mirror
+motorway
+park
+passenger
+railway
+roundabout
+traffic lights
+travel agent
+underground
+wheel
+apartment
+bank
+bookshop
+building
+bus station
+campsite
+castle
+cathedral
+centre
+church
+cinema
+club
+city
+college
+corner
+department store
+disco
+entrance
+exhibition
+exit
+factory
+farm
+flat
+guesthouse
+hospital
+hotel
+library
+lift
+market
+museum
+newsagent
+post office
+restaurant
+ruin
+sports centre
+square
+stadium
+supermarket
+theatre
+tourist information centre
+travel agent
+university
+village
+zoo
+appointment
+autumn
+birthday
+century
+daily
+holidays
+midnight
+moment
+noon
+spring
+summer
+weekend
+weekly
+advertisement
+art
+band
+camera
+cassette
+competition
+concert
+conversation
+drum
+exhibition
+email
+guidebook
+guitar
+information
+internet
+journalist
+magazine
+mouse
+museum
+painter
+photography
+prize
+programme
+project
+website
+present
+actor
+artist
+businessman
+chemist
+colleague
+company
+computer
+customer
+dentist
+diploma
+doctor
+driver
+earn
+engineer
+guest
+guide
+hairdresser
+instructions
+journalist
+mechanic
+nurse
+occupation
+painter
+pharmacy
+photographer
+pilot
+receptionist
+secretary
+shop assistant
+staff
+tour guide
+uniform
+accident
+ambulance
+appointment
+arm
+body
+back
+check
+chemist
+comb
+dangerous
+dentist
+feel
+hospital
+hurt
+insurance
+medicine
+neck
+problem
+soap
+sick
+stomach
+toothbrush
+pain
+lie down
+burn
+centimeter
+degree
+kilometre
+litre
+metre
+mile
+minute
+moment
+quarter
+second
+temperature
+week
+year
+bill
+book
+card
+diploma
+form
+insurance
+licence
+magazine
+menu
+message
+newspaper
+note
+passport
+postcard
+project
+assistant
+bookshop
+cash
+change
+cheap
+cheque
+closed
+cost
+customer
+department store
+dollar
+Euro
+expensive
+for sale
+pay for
+pence
+penny
+pound
+shop assistant
+supermarket
+try on
+beginner
+board
+bookshelf
+college
+course
+Geography
+History
+homework
+information
+instructions
+language
+learn
+level
+library
+Mathematics
+pupil
+remember
+school
+Science
+subject
+university
+brother
+child
+colleague
+cousin
+daughter
+family
+friend
+grandchild
+granddaughter
+grandmother
+grandparent
+grandson
+husband
+love
+married
+Ms
+neighbour
+pen-friend
+surname
+teenager
+guest
+baseball
+basketball
+beach
+bicycle
+bike
+boat
+camera
+camp
+campsite
+catch
+climb
+club
+competition
+football
+game
+golf
+hobby
+hockey
+holidays
+luck
+magazine
+member
+party
+picnic
+pool
+prize
+race
+riding
+sailing
+skiing
+sports centre
+stadium
+swimming
+table tennis
+team
+tent
+throw
+tired
+trainers
+volleyball
+watch
+winner
+address
+downstairs
+flat
+floor
+furniture
+garage
+garden
+gate
+hall
+kitchen
+living room
+pillow
+plate
+roof
+shower
+sitting room
+sofa
+toilet
+towel
+bag
+belt
+blouse
+boot
+clothes
+coat
+dress
+glasses
+hat
+jacket
+jeans
+pocket
+purse
+raincoat
+shirt
+shoe
+shorts
+skirt
+suit
+sweater
+tights
+trainers
+trousers
+try on
+umbrella
+uniform
+wallet
+wear`,
+				
+				
+			    //复习篇
+				`January
+February        
+March                
+April          
+May  
+June 
+July         
+August           
+September    
+October     
+November 
+December
+mobile
+pratice
+dead/die
+dictionary
+diploma
+examination
+Mr. 
+Mrs. 
+bathroom
+bedroom
+blanket
+bookshelf
+bowl
+chair
+T-shirt
+air
+beach
+cloud
+grass
+grow
+hill
+hot
+sea
+sky
+snow
+south
+water
+weather
+west
+wet
+cold
+country
+countryside
+east
+field
+fire
+flower
+fog
+foggy
+forest
+ice
+island
+lake
+moon
+mountain
+north
+plant
+rain
+river
+space
+spring
+star
+storm
+summer
+sun
+sunny
+thunderstorm
+tree
+warm
+wind
+windy
+winter
+wood
+wool
+world
+barbecue
+chips
+biscuit
+bit of cake
+boil
+bottle
+chocolate
+coffee
+cook
+cooker
+cream
+dinner
+hungry
+ice cream
+jam
+juice
+kitchen
+lemon
+piece of cake
+pizza
+plate
+potato
+roast
+salad
+salt
+bowl
+breakfast
+burger
+burn
+butter
+carrot
+cheese
+chicken
+dish
+drink
+fork
+fridge
+fried
+fruit
+grape
+steak
+sugar
+sweet
+thirsty
+tomato
+vegetable
+waiter
+waitress
+onion
+meat
+pepper
+lemonade
+main course
+menu
+mineral water
+pasta
+picnic
+sandwich
+slice
+snack
+soup
+cake
+omelette
+meal
+grill
+grilled
+airport
+ambulance
+brake
+bridge
+arrive
+flight
+garage
+helicopter
+journey
+leave
+left
+passport
+petrol
+petrol station
+pilot
+plane
+platform
+police car
+problem
+suitcase
+ticket
+tour
+tour guide
+tourist
+traffic
+canal
+coach
+crossroads
+delay
+driving licence
+engine
+engineer
+lorry
+luggage
+mechanic
+mile
+mirror
+motorway
+park
+passenger
+railway
+roundabout
+traffic lights
+travel agent
+underground
+wheel
+apartment
+bank
+bookshop
+building
+bus station
+campsite
+castle
+cathedral
+centre
+church
+cinema
+club
+city
+college
+corner
+department store
+disco
+entrance
+exhibition
+exit
+factory
+farm
+flat
+guesthouse
+hospital
+hotel
+library
+lift
+market
+museum
+newsagent
+post office
+restaurant
+ruin
+sports centre
+square
+stadium
+supermarket
+theatre
+tourist information centre
+travel agent
+university
+village
+zoo
+appointment
+autumn
+birthday
+century
+daily
+holidays
+midnight
+moment
+noon
+spring
+summer
+weekend
+weekly
+advertisement
+art
+band
+camera
+cassette
+competition
+concert
+conversation
+drum
+exhibition
+email
+guidebook
+guitar
+information
+internet
+journalist
+magazine
+mouse
+museum
+painter
+photography
+prize
+programme
+project
+website
+present
+actor
+artist
+businessman
+chemist
+colleague
+company
+computer
+customer
+dentist
+diploma
+doctor
+driver
+earn
+engineer
+guest
+guide
+hairdresser
+instructions
+journalist
+mechanic
+nurse
+occupation
+painter
+pharmacy
+photographer
+pilot
+receptionist
+secretary
+shop assistant
+staff
+tour guide
+uniform
+accident
+ambulance
+appointment
+arm
+body
+back
+check
+chemist
+comb
+dangerous
+dentist
+feel
+hospital
+hurt
+insurance
+medicine
+neck
+problem
+soap
+sick
+stomach
+toothbrush
+pain
+lie down
+burn
+centimeter
+degree
+kilometre
+litre
+metre
+mile
+minute
+moment
+quarter
+second
+temperature
+week
+year
+bill
+book
+card
+diploma
+form
+insurance
+licence
+magazine
+menu
+message
+newspaper
+note
+passport
+postcard
+project
+assistant
+bookshop
+cash
+change
+cheap
+cheque
+closed
+cost
+customer
+department store
+dollar
+Euro
+expensive
+for sale
+pay for
+pence
+penny
+pound
+shop assistant
+supermarket
+try on
+beginner
+board
+bookshelf
+college
+course
+Geography
+History
+homework
+information
+instructions
+language
+learn
+level
+library
+Mathematics
+pupil
+remember
+school
+Science
+subject
+university
+brother
+child
+colleague
+cousin
+daughter
+family
+friend
+grandchild
+granddaughter
+grandmother
+grandparent
+grandson
+husband
+love
+married
+Ms
+neighbour
+pen-friend
+surname
+teenager
+guest
+baseball
+basketball
+beach
+bicycle
+bike
+boat
+camera
+camp
+campsite
+catch
+climb
+club
+competition
+football
+game
+golf
+hobby
+hockey
+holidays
+luck
+magazine
+member
+party
+picnic
+pool
+prize
+race
+riding
+sailing
+skiing
+sports centre
+stadium
+swimming
+table tennis
+team
+tent
+throw
+tired
+trainers
+volleyball
+watch
+winner
+address
+downstairs
+flat
+floor
+furniture
+garage
+garden
+gate
+hall
+kitchen
+living room
+pillow
+plate
+roof
+shower
+sitting room
+sofa
+toilet
+towel
+bag
+belt
+blouse
+boot
+clothes
+coat
+dress
+glasses
+hat
+jacket
+jeans
+pocket
+purse
+raincoat
+shirt
+shoe
+shorts
+skirt
+suit
+sweater
+tights
+trainers
+trousers
+try on
+umbrella
+uniform
+wallet
+wear`
+				];
+		//var totalWords=wordsGroup[0]+wordsGroup[1]+wordsGroup[2];
+		//for(var j=0; j<totalWords.length;j++) {
+		//    console.log(totalWords[j]+":"+tounicode(totalWords[j])+":"+totalWords[j]);
+		//}
+		
+		//取出对应level字库后，先将字库随机排序，再返回
+		var retWords="";
+		var count=wordsGroup[level].split(/\r?\n/).length; 
+        var originalArray=new Array;
+        for (var i=0;i<count;i++){ 
+            originalArray[i]=i; 
+        } 
+		//console.log(originalArray);
+		originalArray.sort(function(){ return 0.5 - Math.random(); }); 
+		//console.log(originalArray);
+		for(var i=0; i<count; i++) {
+		    if(i!=count-1) {
+				retWords+=((wordsGroup[level].split(/\r?\n/))[originalArray[i]] + '\r\n');
+			}
+		}
+		return retWords;
+	}
+
+	function showNextWord() {
+		var word = window.words[window.seq];
+		$("#aword").text(word);
+		
+		$.ajax({
+         type: "get",  // 请求方式
+         url: "http://api.microsofttranslator.com/v2/Http.svc/Translate?appId=AFC76A66CF4F434ED080D245C30CF1E71C22959C&from=en&to=zh-hans&text="+word,  // 目标资源
+         data: '', // 请求参数
+         dataType: "xml",  // 服务器响应的数据类型
+         success : function (data) {  // readystate == 4 && status == 200
+             $('#stroke').html("<p>"+$(data).children().text()+"</p>");  // data是一个dom对象, 先将其转化为jquery对象
+         }
+     });
+
+		
+	
+			
+			
+		//$("#stroke").html("<img src='http://api.microsofttranslator.com/v2/Http.svc/Translate?appId=AFC76A66CF4F434ED080D245C30CF1E71C22959C&from=en&to=zh-hans&text="+word");
+
+	}
+
+	function readFromTTS(ttsText, speed) {
+	    if(speed == null ){
+		    speed = 1;
+		}
+		//var srcAudio = 'http://tts.baidu.com/text2audio?lan=zh&ie=UTF-8&spd='+speed+'&text='+ttsText;
+		var srcAudio = "http://dict.youdao.com/dictvoice?audio="+ttsText;
+        playSound(srcAudio);
+	};
+
+	$(document).ready(
+			function() {
+				showSelectView();
+				$("#gui").on("change","input[type='radio']",function(){
+					//window.words = selectWordLevel($("input[type='radio']:checked").val());
+					window.words=(selectWordLevel(this.value)).split(/\r?\n/);
+				});
+				
+				$("#gui").on("change","input[type='color']",function(){
+				    //$(".card").css("background",document.getElementById("bgcolor").value);
+					$(".card").css("background",this.value);
+				});
+				
+                $("#gui").on("click","button",function(){
+					switch(this.id) {
+					    case "knowit":
+						    doYes();
+							break;
+						case "unknowit":
+						    doNo();
+							break;
+						case "readit":
+						    readFromTTS($("#aword").text());
+							break;
+						case "viewscore":
+						    getScore();
+							break;
+						case "startButton":
+						    startNow();
+							break;
+						default:
+						    break;					
+
+					};
+				    
+				});	
+            $('#popup').popup({ifDrag: true, dragLimit: true});	
+            if(window.screen.width < window.screen.height) {
+                $('.card').css("width","100%");
+				$('.aword').css("width","95%");
+				$('button').css("width","15%");
+				$('.card img').css("width","75%");
+			}			
+			});
+</script>
+</head>
+<body>
+	<div id="gui" class="card align-center">
+	    <div id="bgcolordiv" class="align-center" style="color: white;"><input type="color" id="bgcolor" value="#124191"></div>
+		<div id="aword" class="header align-center"><img src="./study_files/logo.png"><br><h4>选择挑战难度：</h4><input type="radio" name="wordlevel" value="0">初级难度<br><input type="radio" name="wordlevel" value="1">中级难度<br><input type="radio" name="wordlevel" value="2">高级难度<br><input type="radio" name="wordlevel" value="3">拓展篇<br><input type="radio" name="wordlevel" value="4">复习篇<br><br><button class="button button-raised button-royal" id="startButton">Go</button></div>
+		<div id="controlview" class="body" style="display: none">
+			<button id="knowit" class="button  button-royal"> √</button>
+			<button id="readit" class="button button-pill button-tiny"> 音 </button>
+			<button id="btn1" class="button button-pill button-tiny">意</button>
+			<button id="viewscore" class="button button-pill button-tiny"> 分 </button>
+			<button id="unknowit" class="button  button-caution">×</button>
+		</div>
+	</div>
+	
+	<div id="popup" style="left: 618px; opacity: 0; top: 150px; display: none;">
+        <div class="title">
+          <p data-title="翻译" style=" margin-top:0;margin-bottom:0;">翻译</p>
+          <span>x</span>
+        </div>
+        <div id="stroke" class="cont"></div>
+    </div>
+
+
+
+</body></html>
